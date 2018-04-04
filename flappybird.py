@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 
-import pygame
+import pygame, sys, os, random
 from pygame.locals import *  # noqa
-import sys
-import os
-import random
-
 from neural_model import get_jump
 
 global SAVING
 SAVING = False
+
+global JUMP_CONST
+global STAY_CONST
+JUMP_CONST = USEREVENT + 1
+STAY_CONST = USEREVENT + 2
+
+global JUMP
+JUMP = pygame.event.Event(JUMP_CONST, message="bird.jump")
+
+global STAY
+STAY = pygame.event.Event(STAY_CONST, message="bird.stay")
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -17,6 +24,8 @@ def makeDirIfNotExist(directory):
 
 class FlappyBird:
     def __init__(self):
+
+        pygame.init()
         # set up the display
         self.screen = pygame.display.set_mode((400, 708))
         self.bird = pygame.Rect(65, 50, 50, 50)
@@ -97,8 +106,8 @@ class FlappyBird:
 
         # check if bird has fallen above/below the screen
         if not 0 < self.bird[1] < 720:
-            self.bird[1] = 50
-            self.birdY = 50
+            self.bird[1] = 350
+            self.birdY = 350
             self.dead = False
             self.counter = 0
             self.wallx = 400
@@ -111,51 +120,68 @@ class FlappyBird:
             if SAVING:
             	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
 
+    def frameUpdate(self):
+        self.screen.fill((255, 255, 255))
+        # keep this line commented out for training - less distracting background
+        # self.screen.blit(self.background, (0, 0))
+
+        self.screen.blit(self.wallUp,
+                         (self.wallx, 360 + self.gap - self.offset))
+        self.screen.blit(self.wallDown,
+                         (self.wallx, 0 - self.gap - self.offset))
+        self.screen.blit(self.font.render(str(self.counter),
+                                     -1,
+                                     (0, 0, 0)),
+                            (200, 50))
+        # change sprite 
+        if self.jump:
+            self.sprite = 1
+
+        self.screen.blit(self.birdSprites[self.sprite], (70, self.birdY))
+        if not self.dead:
+            self.sprite = 0
+        
+        self.updateWalls()
+        self.birdUpdate()
+        if SAVING:
+            pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
+        self.image_counter += 1
+
+        pygame.display.update()
+
     def run(self):
         # initialize game and game counter font
         clock = pygame.time.Clock()
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
+        self.font = font
+        self.frameUpdate()
 
         while True:
             clock.tick(60)
+
+            if get_jump(None):
+                pygame.event.post(JUMP)
+            else:
+                pygame.event.post(STAY)
+
             event = pygame.event.wait()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if (event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN) and not self.dead:
-                    self.jump = 17
-                    self.gravity = 5
-                    self.jumpSpeed = 10
+            #for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == JUMP_CONST and not self.dead:
+                self.jump = 17
+                self.gravity = 5
+                self.jumpSpeed = 10
+                print('jump')
+                continue
+            elif event.type == STAY_CONST and not self.dead:
+                print("stay")
+                pass
 
-            self.screen.fill((255, 255, 255))
-            # keep this line commented out for training - less distracting background
+            self.frameUpdate()
 
-            # self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.wallUp,
-                             (self.wallx, 360 + self.gap - self.offset))
-            self.screen.blit(self.wallDown,
-                             (self.wallx, 0 - self.gap - self.offset))
-            self.screen.blit(font.render(str(self.counter),
-                                         -1,
-                                         (0, 0, 0)),
-                                (200, 50))
-            
-            # change sprite 
-            if self.jump:
-                self.sprite = 1
-
-            self.screen.blit(self.birdSprites[self.sprite], (70, self.birdY))
-            if not self.dead:
-                self.sprite = 0
-            
-            self.updateWalls()
-            self.birdUpdate()
-            if SAVING:
-            	pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
-            self.image_counter += 1
-
-            pygame.display.update()
+                
 
 if __name__ == "__main__":
     FlappyBird().run()
