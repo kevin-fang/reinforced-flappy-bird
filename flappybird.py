@@ -6,6 +6,11 @@ import sys
 import os
 import random
 
+from neural_model import get_jump
+
+global SAVING
+SAVING = False
+
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -17,8 +22,7 @@ class FlappyBird:
         self.bird = pygame.Rect(65, 50, 50, 50)
         self.background = pygame.image.load("assets/background.png").convert()
         self.birdSprites = [pygame.image.load("assets/1.png").convert_alpha(),
-                            pygame.image.load("assets/2.png").convert_alpha(),
-                            pygame.image.load("assets/dead.png")]
+                            pygame.image.load("assets/2.png").convert_alpha()]
         # create pipes
         self.wallUp = pygame.image.load("assets/bottom.png").convert_alpha()
         self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
@@ -44,8 +48,9 @@ class FlappyBird:
         self.game_counter = 0
 
         # make the first screenshot folder
-        makeDirIfNotExist("./screenshots")
-        makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
+        if SAVING:
+        	makeDirIfNotExist("./screenshots")
+        	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
 
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
@@ -103,7 +108,8 @@ class FlappyBird:
             # reset the image counter and increment the game counter
             self.game_counter += 1
             self.image_counter = 0
-            makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
+            if SAVING:
+            	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
 
     def run(self):
         # initialize game and game counter font
@@ -113,6 +119,7 @@ class FlappyBird:
 
         while True:
             clock.tick(60)
+            event = pygame.event.wait()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -144,7 +151,8 @@ class FlappyBird:
             
             self.updateWalls()
             self.birdUpdate()
-            pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
+            if SAVING:
+            	pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
             self.image_counter += 1
 
             pygame.display.update()
