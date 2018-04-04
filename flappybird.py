@@ -13,14 +13,21 @@ def makeDirIfNotExist(directory):
 class FlappyBird:
     def __init__(self):
         # set up the display
-        self.screen = pygame.display.set_mode((400, 708))
+        if HEADLESS:
+            os.environ["SDL_VIDEODRIVER"] = "dummy"
+            #self.real_screen = pygame.display.set_mode((1,1))
+            self.real_screen = pygame.display.set_mode((1, 1))
+            self.screen = pygame.Surface((400, 708)).convert()
+        else:
+            self.screen = pygame.display.set_mode((400, 708))
+
         self.bird = pygame.Rect(65, 50, 50, 50)
         self.background = pygame.image.load("assets/background.png").convert()
-        self.birdSprites = [pygame.image.load("assets/1.png").convert_alpha(),
-                            pygame.image.load("assets/2.png").convert_alpha()]
+        self.birdSprites = [pygame.image.load("assets/1.png").convert(),
+                            pygame.image.load("assets/2.png").convert()]
         # create pipes
-        self.wallUp = pygame.image.load("assets/bottom.png").convert_alpha()
-        self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
+        self.wallUp = pygame.image.load("assets/bottom.png").convert()
+        self.wallDown = pygame.image.load("assets/top.png").convert()
 
         # set the gap between the pipes
         self.gap = 130
@@ -111,16 +118,16 @@ class FlappyBird:
     def frameUpdate(self):
         self.screen.fill((255, 255, 255))
         # keep this line commented out for training - less distracting background
-        # self.screen.blit(self.background, (0, 0))
+        #self.screen.blit(self.background, (0, 0))
 
         self.screen.blit(self.wallUp,
                          (self.wallx, 360 + self.gap - self.offset))
         self.screen.blit(self.wallDown,
                          (self.wallx, 0 - self.gap - self.offset))
         self.screen.blit(self.font.render(str(self.counter),
-                                     -1,
-                                     (0, 0, 0)),
-                            (200, 50))
+                                    0,
+                                    (0, 0, 0)),
+                                    (200, 50))
         # change sprite 
         if self.jump:
             self.sprite = 1
@@ -131,7 +138,7 @@ class FlappyBird:
         
         self.updateWalls()
         self.birdUpdate()
-        if SAVING:
+        if SAVING and self.alive_frames % 10 == 0:
             pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
         self.image_counter += 1
 
@@ -139,14 +146,14 @@ class FlappyBird:
 
     def run(self):
         # initialize game and game counter font
-        clock = pygame.time.Clock()
+        #clock = pygame.time.Clock()
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
         self.frameUpdate()
 
         while True:
-            clock.tick(60)
+            #clock.tick(60)
 
             if get_jump(None, self.last_jump_counter):
                 self.last_jump_counter = 0

@@ -5,4 +5,4 @@ global SAVING
 SAVING = False
 
 global HEADLESS
-HEADLESS = True
+HEADLESS = False
