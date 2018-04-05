@@ -7,4 +7,4 @@ import random
 
 # image takes input of the screenshot, last_jump is the number of frames since the last jump
 def get_jump(img, last_jump):
-	return random.choice([True, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
+	return random.choice([True, False, False, False, False, False, False, False, False, False, False, False, False])

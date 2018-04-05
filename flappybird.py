@@ -31,7 +31,7 @@ class FlappyBird:
         self.wallDown = pygame.image.load("assets/top.png").convert()
 
         # set the gap between the pipes
-        self.gap = 130
+        self.gap = 250
 
         self.wallx = 400
         self.birdY = 350
@@ -101,11 +101,12 @@ class FlappyBird:
         # check if bird has fallen above/below the screen
         if not 0 < self.bird[1] < 720:
             screens_folder = './screenshots/game{}'.format(self.game_counter)
-            if self.alive_frames > 135:
-                print("Keeping game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
-            else:
-                print("Deleting game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
-                rmtree(screens_folder)
+            if SAVING:
+                if self.alive_frames > SAVE_THRESHOLD:
+                    print("Keeping game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
+                else:
+                    print("Deleting game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
+                    rmtree(screens_folder)
             self.alive_frames = 0
             self.bird[1] = 350
             self.birdY = 350
@@ -130,10 +131,10 @@ class FlappyBird:
                          (self.wallx, 360 + self.gap - self.offset))
         self.screen.blit(self.wallDown,
                          (self.wallx, 0 - self.gap - self.offset))
-        #self.screen.blit(self.font.render(str(self.counter),
-        #                            0,
-        #                            (0, 0, 0)),
-        #                            (200, 50))
+        self.screen.blit(self.font.render(str(self.counter),
+                                    0,
+                                    (0, 0, 0)),
+                                    (200, 50))
         # change sprite 
         if self.jump:
             self.sprite = 1

@@ -1,10 +1,11 @@
 import random, os
 import numpy as np
+from config import *
 
-#from nn_model import neural_network_model
-#import tflearn
+from nn_model import neural_network_model
+import tflearn
 
-def train_model(training_data, model=False):
+def train_model(training_images, actions, last_jumps, model=False):
 	X = training_data[0]
 	y = training_data[1]
 
@@ -16,27 +17,20 @@ def train_model(training_data, model=False):
 	return model
 
 def run_train():
-	training_data = get_training_data('./screenshots')
-	model = train_model(training_data)
+	training_images = np.load(os.path.join(DATA_DIR, "images.npy"))
+	actions = np.load(os.path.join(DATA_DIR, "actions.npy"))
+	last_jumps = np.load(os.path.join(DATA_DIR, "last_jumps.npy"))
+	X_data = add_jumps_to_training(training_images = training_images, last_jumps = last_jumps)
+	model = train_model(training_images = training_images, actions = actions, last_jumps = last_jumps)
 
-	if not os.path.exists('./models'):
+	if not os.path.exists(MODEL_DIR):
 		os.makedirs(directory)
-	model.save('./models/trained_flappy.model')
+	model.save(os.path.join(MODEL_DIR, "trained_flappy.model"))
 
-def get_training_data(directory):
-	# todo: implement script that recursively reads from all the folders in the directory containing screenshots.
-	# once have all these, collect data about last jump and whether jumped from file name
-	# then, split into X and y training data.
-	actions = []
-	last_jumps = []
-	for root, dirs, files in os.walk(directory):
-		path = root.split(os.sep)
-		for file in files:
-			print(path)
-			info = file.split("_")
-			actions.append(info[0])
-			last_jumps.append(info[1])
-
+def add_jumps_to_training(training_images, last_jumps):
+	flattened_training = training_images.ravel().reshape([2420, 708 * 400 * 3])
+	X_data = np.concatenate((flattened_training, np.array([last_jumps]).T), axis=1)
+	return X_data
 
 if __name__ == "__main__":
-	get_training_data('./screenshots')
+	run_train()
