@@ -55,10 +55,12 @@ class FlappyBird:
         self.image_counter = 0
         self.game_counter = STARTING_NUM
 
+        self.saved_game_counter = 0
+
         # make the first screenshot folder
         if SAVING:
-        	makeDirIfNotExist("./screenshots")
-        	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
+            makeDirIfNotExist(TRAIN_SCREEN_DIR)
+            makeDirIfNotExist(os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter)))
 
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
@@ -100,9 +102,13 @@ class FlappyBird:
 
         # check if bird has fallen above/below the screen
         if not 0 < self.bird[1] < 720:
-            screens_folder = './screenshots/game{}'.format(self.game_counter)
+            screens_folder = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter))
             if SAVING:
-                if self.alive_frames > SAVE_THRESHOLD:
+                if self.saved_game_counter >= NUM_SAVES:
+                    print("Successfully generated: {} games past {} frame threshold.".format(NUM_SAVES, SCORE_THRESHOLD))
+                    sys.exit()
+                if self.alive_frames > SCORE_THRESHOLD:
+                    self.saved_game_counter += 1
                     print("Keeping game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
                 else:
                     print("Deleting game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
@@ -120,7 +126,7 @@ class FlappyBird:
             self.game_counter += 1
             self.image_counter = 0
             if SAVING:
-            	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
+                makeDirIfNotExist(os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter)))
 
     def frameUpdate(self, jump):
         self.screen.fill((255, 255, 255))
@@ -145,8 +151,9 @@ class FlappyBird:
         
         self.updateWalls()
         self.birdUpdate()
-        if SAVING and self.alive_frames % 3 == 0 and jump != None:
-            pygame.image.save(self.screen, "screenshots/game{}/{}_{}_screenshot_{}.jpg".format(self.game_counter, "j" if jump else "n", self.last_jump_counter, self.image_counter))
+        if (SAVING and self.alive_frames % 3 == 0 and jump != None) or self.last_jump_counter == 0:
+            pygame.image.save(self.screen, os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
+                                                    "{}_{}_screenshot_{}.jpg".format("j" if jump else "n", self.last_jump_counter, self.image_counter)))
         self.image_counter += 1
 
         pygame.display.update()
@@ -176,6 +183,7 @@ class FlappyBird:
                 self.jump = 17
                 self.gravity = 5
                 self.jumpSpeed = 10
+                self.alive_frames += 1
                 self.frameUpdate(jump = True)
             elif event.type == STAY_CONST and not self.dead:
                 #print(self.last_jump_counter)

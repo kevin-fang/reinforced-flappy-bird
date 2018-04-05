@@ -11,9 +11,7 @@ def neural_network_model():
 
 	# the +1 accounts for last jump time - for now, don't use conv net
 	network = input_data(shape=[None, 400 * 708 * 3 + 1], name='input')
-	network = fully_connected(network, 512, activation="relu", name="fc1")
-	network = dropout(network, dropout_rate)
-	network = fully_connected(network, 256, activation="relu", name="fc2")
+	network = fully_connected(network, 32, activation="relu", name="fc1")
 	network = dropout(network, dropout_rate)
 	network = fully_connected(network, 2, activation="softmax", name="fc3")
 	network = regression(network, optimizer="adam", learning_rate = learning_rate,

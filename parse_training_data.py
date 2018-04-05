@@ -3,7 +3,12 @@ import numpy as np
 import cv2
 from config import *
 
+
+
 def get_training_data(directory):
+
+	num_jumps = 0
+	num_skips = 0
 	# todo: implement script that recursively reads from all the folders in the directory containing screenshots.
 	# once have all these, collect data about last jump and whether jumped from file name
 	# then, split into X and y training data.
@@ -16,6 +21,15 @@ def get_training_data(directory):
 			if "screenshot" in file:
 				image = cv2.imread(os.path.join(*path, file))
 				info = file.split("_")
+				if info[0] == "j":
+					num_jumps += 1
+					actions.append([0, 1])
+				elif num_skips < num_jumps:
+					actions.append([1, 0])
+					num_skips += 1
+				else:
+					continue
+
 				actions.append([0, 1] if info[0] == "j" else [1, 0])
 				last_jumps.append(info[1])
 				images.append(image)
