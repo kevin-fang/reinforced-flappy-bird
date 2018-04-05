@@ -124,10 +124,10 @@ class FlappyBird:
                          (self.wallx, 360 + self.gap - self.offset))
         self.screen.blit(self.wallDown,
                          (self.wallx, 0 - self.gap - self.offset))
-        self.screen.blit(self.font.render(str(self.counter),
-                                    0,
-                                    (0, 0, 0)),
-                                    (200, 50))
+        #self.screen.blit(self.font.render(str(self.counter),
+        #                            0,
+        #                            (0, 0, 0)),
+        #                            (200, 50))
         # change sprite 
         if self.jump:
             self.sprite = 1
@@ -146,15 +146,14 @@ class FlappyBird:
 
     def run(self):
         # initialize game and game counter font
-        #clock = pygame.time.Clock()
+        clock = pygame.time.Clock()
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
         self.frameUpdate()
 
         while True:
-            #clock.tick(60)
-
+            clock.tick()
             if get_jump(None, self.last_jump_counter):
                 self.last_jump_counter = 0
                 pygame.event.post(JUMP)
@@ -175,8 +174,9 @@ class FlappyBird:
                 #print(self.last_jump_counter)
                 self.alive_frames += 1
                 pass
-
-            self.frameUpdate()                
+            print(clock.get_fps())
+            self.frameUpdate() 
+            #clock.tick()               
 
 if __name__ == "__main__":
     FlappyBird().run()
