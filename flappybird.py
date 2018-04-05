@@ -2,7 +2,7 @@
 
 import pygame, sys, os, random
 from pygame.locals import *  # noqa
-from neural_model import get_jump
+from random_jumper import get_jump
 from config import *
 from global_vars import *
 from shutil import rmtree
