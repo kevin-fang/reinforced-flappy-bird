@@ -5,6 +5,7 @@ from pygame.locals import *  # noqa
 from neural_model import get_jump
 from config import *
 from global_vars import *
+from shutil import rmtree
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -14,7 +15,7 @@ class FlappyBird:
     def __init__(self):
         # set up the display
         if HEADLESS:
-            os.environ["SDL_VIDEODRIVER"] = "dummy"
+           # os.environ["SDL_VIDEODRIVER"] = "dummy"
             #self.real_screen = pygame.display.set_mode((1,1))
             self.real_screen = pygame.display.set_mode((1, 1))
             self.screen = pygame.Surface((400, 708)).convert()
@@ -52,7 +53,7 @@ class FlappyBird:
 
         # counters for image storage
         self.image_counter = 0
-        self.game_counter = 0
+        self.game_counter = STARTING_NUM
 
         # make the first screenshot folder
         if SAVING:
@@ -99,7 +100,12 @@ class FlappyBird:
 
         # check if bird has fallen above/below the screen
         if not 0 < self.bird[1] < 720:
-            print("Game over. Alive frames: {}".format(self.alive_frames))
+            screens_folder = './screenshots/game{}'.format(self.game_counter)
+            if self.alive_frames > 135:
+                print("Keeping game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
+            else:
+                print("Deleting game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
+                rmtree(screens_folder)
             self.alive_frames = 0
             self.bird[1] = 350
             self.birdY = 350
@@ -115,7 +121,7 @@ class FlappyBird:
             if SAVING:
             	makeDirIfNotExist("./screenshots/game{}/".format(self.game_counter))
 
-    def frameUpdate(self):
+    def frameUpdate(self, jump):
         self.screen.fill((255, 255, 255))
         # keep this line commented out for training - less distracting background
         #self.screen.blit(self.background, (0, 0))
@@ -138,22 +144,22 @@ class FlappyBird:
         
         self.updateWalls()
         self.birdUpdate()
-        if SAVING and self.alive_frames % 10 == 0:
-            pygame.image.save(self.screen, "screenshots/game{}/screenshot{}.jpg".format(self.game_counter, self.image_counter))
+        if SAVING and self.alive_frames % 3 == 0 and jump != None:
+            pygame.image.save(self.screen, "screenshots/game{}/{}_{}_screenshot_{}.jpg".format(self.game_counter, "j" if jump else "n", self.last_jump_counter, self.image_counter))
         self.image_counter += 1
 
         pygame.display.update()
 
     def run(self):
         # initialize game and game counter font
-        #clock = pygame.time.Clock()
+        clock = pygame.time.Clock()
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
-        self.frameUpdate()
+        self.frameUpdate(jump = None)
 
         while True:
-            #clock.tick(60)
+            clock.tick()
 
             if get_jump(None, self.last_jump_counter):
                 self.last_jump_counter = 0
@@ -170,13 +176,11 @@ class FlappyBird:
                 self.jump = 17
                 self.gravity = 5
                 self.jumpSpeed = 10
-                continue
+                self.frameUpdate(jump = True)
             elif event.type == STAY_CONST and not self.dead:
                 #print(self.last_jump_counter)
                 self.alive_frames += 1
-                pass
-
-            self.frameUpdate()                
+                self.frameUpdate(jump = False)                
 
 if __name__ == "__main__":
     FlappyBird().run()
