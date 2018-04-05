@@ -16,7 +16,7 @@ def get_training_data(directory):
 			if "screenshot" in file:
 				image = cv2.imread(os.path.join(*path, file))
 				info = file.split("_")
-				actions.append(info[0])
+				actions.append([0, 1] if info[0] == "j" else [1, 0])
 				last_jumps.append(info[1])
 				images.append(image)
 				print("Finished file: {}".format(file))
@@ -28,8 +28,8 @@ def get_training_data(directory):
 if __name__ == "__main__":
 	actions, last_jumps, images = get_training_data('./screenshots')
 	print("Converting training data...")
-	actions = np.array(actions)
-	last_jumps = np.array(last_jumps, dtype=np.uint8)
+	actions = np.array(actions, dtype=np.float32)
+	last_jumps = np.array(last_jumps, dtype=np.float32)
 	images = np.array(images)
 
 	if not os.path.exists(DATA_DIR):

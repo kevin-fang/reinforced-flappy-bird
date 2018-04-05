@@ -4,3 +4,6 @@ screenshots/
 *.pyc
 data/
 *.npy
+models/
+.ipynb_checkpoints
+log/
