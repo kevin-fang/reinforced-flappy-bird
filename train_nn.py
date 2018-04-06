@@ -8,9 +8,10 @@ import tflearn
 
 def train_model(X_data, actions, last_jumps, model=False):
 	if not model:
-		model = neural_network_model()
+		print(X_data.shape)
+		model = neural_network_model(X_data.shape[1])
 
-	model.fit({'input': X_data}, {'target': actions}, validation_set = 0.1, batch_size=50, n_epoch = 5, snapshot_step = 500, show_metric = True, run_id="flappy_learning")
+	model.fit({'input': X_data}, {'target': actions}, validation_set = 0.1, batch_size=100, n_epoch = 5, snapshot_step = 500, show_metric = True, run_id="flappy_learning")
 
 	return model
 
@@ -29,7 +30,7 @@ def run_train():
 
 def add_jumps_to_training(training_images, last_jumps):
 	print("Parsing data...")
-	flattened_training = training_images.ravel().reshape([training_images.shape[0], 708 * 400 * 3])
+	flattened_training = training_images.ravel().reshape([training_images.shape[0], training_images.shape[1] * training_images.shape[2]])
 	X_data = np.concatenate((flattened_training, np.array([last_jumps]).T), axis=1)
 	return X_data
 

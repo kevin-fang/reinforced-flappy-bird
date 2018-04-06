@@ -109,7 +109,7 @@ class FlappyBird:
                     sys.exit()
                 if self.alive_frames > SCORE_THRESHOLD:
                     self.saved_game_counter += 1
-                    print("Keeping game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
+                    print("Keeping game: {}; alive frames: {}. Saved so far: {}".format(self.game_counter, self.alive_frames, self.saved_game_counter))
                 else:
                     print("Deleting game: {}; alive frames: {}".format(self.game_counter, self.alive_frames))
                     rmtree(screens_folder)

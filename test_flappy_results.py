@@ -173,14 +173,12 @@ class FlappyBird:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == JUMP_CONST and not self.dead:
-                print('jumping')
                 self.jump = 17
                 self.gravity = 5
                 self.jumpSpeed = 10
                 self.frameUpdate(jump = True)
                 self.alive_frames += 1
             elif event.type == STAY_CONST and not self.dead:
-                print('staying')
                 #print(self.last_jump_counter)
                 self.alive_frames += 1
                 self.frameUpdate(jump = False)                
