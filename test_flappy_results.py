@@ -5,7 +5,7 @@ from pygame.locals import *  # noqa
 from neural_jumper import get_jump
 from config import *
 from global_vars import *
-from shutil import rmtree
+import numpy as np
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -58,9 +58,8 @@ class FlappyBird:
         self.saved_game_counter = 0
 
         # make the first screenshot folder
-        if SAVING:
-            makeDirIfNotExist(TEST_SCREEN_DIR)
-            makeDirIfNotExist(os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter)))
+        makeDirIfNotExist(TEST_SCREEN_DIR)
+        makeDirIfNotExist(os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter)))
 
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
@@ -116,8 +115,7 @@ class FlappyBird:
             # reset the image counter and increment the game counter
             self.game_counter += 1
             self.image_counter = 0
-            if SAVING:
-            	makeDirIfNotExist(os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter)))
+            makeDirIfNotExist(os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter)))
 
     def frameUpdate(self, jump):
         self.screen.fill((255, 255, 255))
@@ -161,10 +159,21 @@ class FlappyBird:
 
         while True:
             clock.tick()
-            if get_jump(self.recent_screenshot_name, self.last_jump_counter):
+            # get a jump from the neural network
+            logits = get_jump(self.recent_screenshot_name, self.last_jump_counter)[0]
+
+            # invert the first index of logits (for some reason, due to the way the weights were initialized, this is needed)
+            logits = np.abs(logits)
+            logits *= 1/np.sum(logits)
+
+            # flip a biased coin
+            result = np.random.choice(np.arange(2), 1, p=logits)[0]
+
+            # send events to jump or stay
+            if result == 1:
                 self.last_jump_counter = 0
                 pygame.event.post(JUMP)
-            else:
+            elif result == 0:
                 self.last_jump_counter += 1
                 pygame.event.post(STAY)
 

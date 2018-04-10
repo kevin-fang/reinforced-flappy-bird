@@ -1,19 +1,22 @@
 import random, os
 import numpy as np
 from config import *
-
-from nn_model import neural_network_model
 import tensorflow as tf
-import tflearn
+from tf_graph import FlappyGraph
 
 def train_model(X_data, actions, last_jumps, model=False):
-	if not model:
-		print(X_data.shape)
-		model = neural_network_model(X_data.shape[1])
+	flappy_graph = FlappyGraph(11361)
+	init = tf.global_variables_initializer()
 
-	model.fit({'input': X_data}, {'target': actions}, validation_set = 0.1, batch_size=100, n_epoch = 5, snapshot_step = 500, show_metric = True, run_id="flappy_learning")
+	with tf.Session() as sess:
+		sess.run(init)
+		_, train_loss, acc = sess.run([flappy_graph.train_step, flappy_graph.loss, flappy_graph.accuracy], 
+										feed_dict={flappy_graph.inputs: X_data, flappy_graph.actions: actions, flappy_graph.lr: 0.0001})
+		saver = tf.train.Saver()
 
-	return model
+		if not os.path.exists(MODEL_DIR):
+			os.makedirs(MODEL_DIR)
+			saver.save(sess, os.path.join(MODEL_DIR, "trained_flappy"))
 
 def run_train():
 	print("Loading data...")
@@ -22,11 +25,9 @@ def run_train():
 	last_jumps = np.load(os.path.join(DATA_DIR, "last_jumps.npy"))
 	X_data = add_jumps_to_training(training_images = training_images, last_jumps = last_jumps)
 	print("Training model...")
-	model = train_model(X_data, actions, last_jumps)
+	
+	train_model(X_data, actions, last_jumps)
 
-	if not os.path.exists(MODEL_DIR):
-		os.makedirs(MODEL_DIR)
-	model.save(os.path.join(MODEL_DIR, "trained_flappy.model"))
 
 def add_jumps_to_training(training_images, last_jumps):
 	print("Parsing data...")
