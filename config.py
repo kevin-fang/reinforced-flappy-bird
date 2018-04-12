@@ -5,6 +5,18 @@ from pygame.locals import *  # noqa
 global HEADLESS
 HEADLESS = False
 
+global CANVAS_HEIGHT
+CANVAS_HEIGHT = 708
+
+global CANVAS_WIDTH
+CANVAS_WIDTH = 400
+
+global IMG_SCALE_FACTOR
+IMG_SCALE_FACTOR = 0.2
+
+global SAVING
+SAVING = True
+
 # where to start counting for game numbers - so we don't overwrite data
 global STARTING_NUM
 STARTING_NUM = 0

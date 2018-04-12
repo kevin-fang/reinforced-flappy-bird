@@ -6,6 +6,7 @@ from neural_jumper import get_jump
 from config import *
 from global_vars import *
 import numpy as np
+import cv2
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -18,9 +19,9 @@ class FlappyBird:
            # os.environ["SDL_VIDEODRIVER"] = "dummy"
             #self.real_screen = pygame.display.set_mode((1,1))
             self.real_screen = pygame.display.set_mode((1, 1))
-            self.screen = pygame.Surface((400, 708)).convert()
+            self.screen = pygame.Surface((CANVAS_WIDTH, CANVAS_HEIGHT)).convert()
         else:
-            self.screen = pygame.display.set_mode((400, 708))
+            self.screen = pygame.display.set_mode((CANVAS_WIDTH, CANVAS_HEIGHT))
 
         self.bird = pygame.Rect(65, 50, 50, 50)
         self.background = pygame.image.load("assets/background.png").convert()
@@ -140,11 +141,11 @@ class FlappyBird:
         
         self.updateWalls()
         self.birdUpdate()
-        self.recent_screenshot_name = os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter), 
-                                                    "{}_{}_screenshot_{}.jpg".format("j" if jump else "n", self.last_jump_counter, self.image_counter))
-        
-        pygame.image.save(self.screen, self.recent_screenshot_name)
-            
+        screenshot_name = os.path.join(TEST_SCREEN_DIR, "game{}".format(self.game_counter), 
+                                                    "{frame_num}_capture".format(frame_num = self.image_counter))
+        if SAVING:
+            pygame.image.save(self.screen, screenshot_name)
+
         self.image_counter += 1
 
         pygame.display.update()
@@ -160,15 +161,16 @@ class FlappyBird:
         while True:
             clock.tick()
             # get a jump from the neural network
-            logits = get_jump(self.recent_screenshot_name, self.last_jump_counter)[0]
+            image = pygame.image.tostring(self.screen, "RGB")
+            logits = get_jump(image, self.last_jump_counter)[0]
 
-            # invert the first index of logits (for some reason, due to the way the weights were initialized, this is needed)
-            logits = np.abs(logits)
-            logits *= 1/np.sum(logits)
+            # sigmoid
+            logits = np.exp(logits) / (1 + np.exp(logits))[0]
 
+            print("logits: {}".format(logits))
             # flip a biased coin
-            result = np.random.choice(np.arange(2), 1, p=logits)[0]
-
+            result = np.random.choice(np.arange(2), 1, p=[1-logits[0], logits[0]])[0]
+            print("result: {}".format(result))
             # send events to jump or stay
             if result == 1:
                 self.last_jump_counter = 0

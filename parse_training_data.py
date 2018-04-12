@@ -15,9 +15,12 @@ def get_training_data(directory):
 	actions = []
 	last_jumps = []
 	images = []
+	rewards = []
+	reward_counter = 0
 	for root, dirs, files in os.walk(directory):
 		path = root.split(os.sep)
 		for file in files:
+			rewards[reward_counter] = []
 			if "screenshot" in file:
 				image = preprocess.bw_shrink(os.path.join(*path, file))
 				info = file.split("_")
@@ -29,14 +32,15 @@ def get_training_data(directory):
 					num_skips += 1
 				else:
 					continue
-
 				num_saved += 1
 				actions.append([0, 1] if info[0] == "j" else [1, 0])
-				last_jumps.append(info[1])
+				rewards[reward_counter].append(info[1])
+				last_jumps.append(info[2])
 				images.append(image)
 				print("Parsed file: {}".format(file))
 			else:
 				print("Skipped file: {}".format(file))
+		reward_counter += 1
 
 	print("{} images saved.".format(num_saved))
 	return actions, last_jumps, images
