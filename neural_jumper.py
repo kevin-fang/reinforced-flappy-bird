@@ -20,7 +20,6 @@ sess.run(init)
 def get_jump(buf, last_jump):
 	image = bw(shrink(decode_image_buffer(buf)))
 	#print(image.shape)
-	cv2.imwrite("good.jpg", image)
 	flattened_img = image.ravel().reshape([1, image.shape[0] * image.shape[1]])
 	X_data = np.append(flattened_img, last_jump)
 	logits = sess.run(graph.y_logits, feed_dict={graph.inputs: np.array([X_data])})
