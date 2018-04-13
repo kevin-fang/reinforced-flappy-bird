@@ -21,21 +21,25 @@ def get_training_data(directory):
 		files = sorted(files, key=lambda name: int(name.split("_")[0]))
 
 		if len(files) > 0:
+			actions.append([])
 			rewards.append([])
 			images.append([])
-
+			last_jumps.append([])
 
 			for file in files:
-				image = cv2.imread(os.path.join(*path, file), cv2.IMREAD_GRAYSCALE)
+				image = shrink(cv2.imread(os.path.join(*path, file), cv2.IMREAD_GRAYSCALE))
 				img_num, jumped, reward, frames_since_jump, _ = file.split("_")
 
-				actions.append([0, 1] if jumped == "j" else [1, 0])
+				actions[iter_counter].append([0, 1] if jumped == "j" else [1, 0])
 				rewards[iter_counter].append(reward)
 				images[iter_counter].append(image)
-				last_jumps.append(frames_since_jump)
+				last_jumps[iter_counter].append(frames_since_jump)
 				num_saved += 1
 				print("Parsed file: {}".format(file))
+
 			rewards[iter_counter] = np.array(rewards[iter_counter], np.float32)
+			actions[iter_counter] = np.array(actions[iter_counter], np.float32)
+			last_jumps[iter_counter] = np.array(last_jumps[iter_counter], np.float32)
 			images[iter_counter] = np.array(images[iter_counter], np.float32)
 			iter_counter += 1
 
@@ -46,8 +50,8 @@ def get_training_data(directory):
 if __name__ == "__main__":
 	actions, last_jumps, images, rewards = get_training_data('./screenshots')
 	print("Process training data...")
-	actions = np.array(actions, dtype=np.float32)
-	last_jumps = np.array(last_jumps, dtype=np.float32)
+	actions = np.array(actions)
+	last_jumps = np.array(last_jumps)
 	images = np.array(images)
 	rewards = np.array(rewards)
 

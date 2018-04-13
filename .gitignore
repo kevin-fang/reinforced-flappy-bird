@@ -8,3 +8,4 @@ models/
 .ipynb_checkpoints
 log/
 screenshots_test/
+*.jpg
