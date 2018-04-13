@@ -4,6 +4,7 @@ import cv2
 from config import *
 from preprocess import *
 
+
 def get_training_data(directory):
 	num_saved = 0
 	num_jumps = 0
@@ -17,7 +18,7 @@ def get_training_data(directory):
 	# "{img_num}_{jumped}_{reward}_{last_jump}_capture.jpg"
 	for root, dirs, files in os.walk(directory):
 		path = root.split(os.sep)
-		files = list(filter(lambda filename: True if "capture" in filename else False, files))
+		files = list(filter((lambda filename: True if "capture" in filename else False), files))
 		files = sorted(files, key=lambda name: int(name.split("_")[0]))
 
 		if len(files) > 0:
@@ -30,30 +31,47 @@ def get_training_data(directory):
 				image = shrink(cv2.imread(os.path.join(*path, file), cv2.IMREAD_GRAYSCALE))
 				img_num, jumped, reward, frames_since_jump, _ = file.split("_")
 
-				actions[iter_counter].append([0, 1] if jumped == "j" else [1, 0])
+				actions[iter_counter].append([0, 1] if jumped == 1 else [1, 0])
 				rewards[iter_counter].append(reward)
 				images[iter_counter].append(image)
 				last_jumps[iter_counter].append(frames_since_jump)
 				num_saved += 1
-				print("Parsed file: {}".format(file))
-
-			rewards[iter_counter] = np.array(rewards[iter_counter], np.float32)
-			actions[iter_counter] = np.array(actions[iter_counter], np.float32)
-			last_jumps[iter_counter] = np.array(last_jumps[iter_counter], np.float32)
-			images[iter_counter] = np.array(images[iter_counter], np.float32)
+				#print("Parsed file: {}".format(file))
+			# lambda function to convert to float array
+			convert = lambda arr: np.array(arr[iter_counter], np.float32)
+			rewards[iter_counter], actions[iter_counter], last_jumps[iter_counter], images[iter_counter] = map(convert, 
+				[rewards, actions, last_jumps, images])
 			iter_counter += 1
-
 
 	print("{} images saved.".format(num_saved))
 	return actions, last_jumps, images, rewards
 
+def calculate_adjusted_rewards(actions, rewards):
+	adjusted_rewards = []
+	gamma = 0.99
+	iter_counter = 0
+	# loop through each game
+	for i, game in enumerate(rewards):
+		adjusted_rewards.append([])
+		# loop through rewards in a game
+		for j, reward in enumerate(rewards[i]):
+			adj_reward = 0
+			for k, future_reward in enumerate(rewards[i][j:]):
+				#print("gamma ** j: {}, future reward: {}".format(gamma ** j, future_reward))
+				adj_reward += (gamma ** j) * future_reward
+
+			adjusted_rewards[iter_counter].append(adj_reward)
+		adjusted_rewards[iter_counter] = np.array(adjusted_rewards[iter_counter], dtype=np.float32)
+		iter_counter += 1
+
+	return np.array(adjusted_rewards)
+
 if __name__ == "__main__":
-	actions, last_jumps, images, rewards = get_training_data('./screenshots')
-	print("Process training data...")
-	actions = np.array(actions)
-	last_jumps = np.array(last_jumps)
-	images = np.array(images)
-	rewards = np.array(rewards)
+	print("Processing training data...")
+	actions, last_jumps, images, rewards = map(np.array, get_training_data('./screenshots'))
+
+	print("Calculating adjusted rewards..")
+	adjusted_rewards = calculate_adjusted_rewards(actions, rewards)
 
 	if not os.path.exists(DATA_DIR):
 	   os.makedirs(DATA_DIR)
@@ -62,4 +80,5 @@ if __name__ == "__main__":
 	np.save(os.path.join(DATA_DIR, "last_jumps.npy"), last_jumps)
 	np.save(os.path.join(DATA_DIR, "images.npy"), images)
 	np.save(os.path.join(DATA_DIR, "rewards.npy"), rewards)
-	
+	np.save(os.path.join(DATA_DIR, "adjusted_rewards.npy"), adjusted_rewards)
+	print("Completed data parsing!")

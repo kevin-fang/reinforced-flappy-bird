@@ -164,7 +164,7 @@ class FlappyBird:
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
                                                     "{img_num}_{y}_{r}_{last_jump}_capture.jpg"
-                                                        .format(y="j" if jump else "n", 
+                                                        .format(y=1 if jump else 0, 
                                                                 r=score, 
                                                                 last_jump=self.last_jump_counter, 
                                                                 img_num=self.image_counter))

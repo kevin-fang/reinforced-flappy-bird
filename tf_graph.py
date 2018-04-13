@@ -13,7 +13,7 @@ class FlappyGraph:
 		b1 = tf.Variable(tf.zeros(L1))
 
 		W2 = tf.Variable(tf.truncated_normal([L1, output_dim], stddev=0.001, dtype=tf.float32))
-		b2 = tf.Variable(tf.ones(output_dim) * -2.5)
+		b2 = tf.Variable(tf.ones(output_dim) * -2.8)
 
 		y1 = tf.nn.relu(tf.matmul(self.inputs, W1) + b1)
 		self.y_logits = tf.matmul(y1, W2) + b2
