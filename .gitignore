@@ -9,3 +9,4 @@ models/
 log/
 screenshots_test/
 *.jpg
+.ipynb_checkpoints/

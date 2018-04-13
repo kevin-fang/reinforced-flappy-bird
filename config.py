@@ -15,7 +15,7 @@ global IMG_SCALE_FACTOR
 IMG_SCALE_FACTOR = 0.2
 
 global SAVING
-SAVING = True
+SAVING = False
 
 # where to start counting for game numbers - so we don't overwrite data
 global STARTING_NUM
@@ -23,7 +23,7 @@ STARTING_NUM = 0
 
 # directory to hold numpy arrays
 global DATA_DIR
-DATA_DIR = './data/'
+DATA_DIR = './data'
 
 # directory to hold TensorFlow models
 global MODEL_DIR

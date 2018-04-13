@@ -164,13 +164,13 @@ class FlappyBird:
             image = pygame.image.tostring(self.screen, "RGB")
             logits = get_jump(image, self.last_jump_counter)[0]
 
+            print("logits: {}".format(logits))
             # sigmoid
             logits = np.exp(logits) / (1 + np.exp(logits))[0]
 
-            print("logits: {}".format(logits))
             # flip a biased coin
             result = np.random.choice(np.arange(2), 1, p=[1-logits[0], logits[0]])[0]
-            print("result: {}".format(result))
+            #print("result: {}".format(result))
             # send events to jump or stay
             if result == 1:
                 self.last_jump_counter = 0

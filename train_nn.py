@@ -4,14 +4,14 @@ from config import *
 import tensorflow as tf
 from tf_graph import FlappyGraph
 
-def train_model(X_data, actions, last_jumps, model=False):
-	flappy_graph = FlappyGraph(11361)
+def train_model(X_data, actions, last_jumps, rewards, model=False):
+	flappy_graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1, None)
 	init = tf.global_variables_initializer()
 
 	with tf.Session() as sess:
 		sess.run(init)
 		_, train_loss, acc = sess.run([flappy_graph.train_step, flappy_graph.loss, flappy_graph.accuracy], 
-										feed_dict={flappy_graph.inputs: X_data, flappy_graph.actions: actions, flappy_graph.lr: 0.0001})
+										feed_dict={flappy_graph.inputs: X_data, flappy_graph.actions: actions, flappy_graph.rewards: rewards, flappy_graph.lr: 0.0001})
 		saver = tf.train.Saver()
 
 		if not os.path.exists(MODEL_DIR):
@@ -22,18 +22,27 @@ def run_train():
 	print("Loading data...")
 	training_images = np.load(os.path.join(DATA_DIR, "images.npy"))
 	actions = np.load(os.path.join(DATA_DIR, "actions.npy"))
+	rewards = np.load(os.path.join(DATA_DIR, "adjusted_rewards.npy"))
 	last_jumps = np.load(os.path.join(DATA_DIR, "last_jumps.npy"))
 	X_data = add_jumps_to_training(training_images = training_images, last_jumps = last_jumps)
 	print("Training model...")
 	
-	train_model(X_data, actions, last_jumps)
+	train_model(X_data[0], actions, last_jumps, rewards)
 
 
 def add_jumps_to_training(training_images, last_jumps):
 	print("Parsing data...")
-	flattened_training = training_images.ravel().reshape([training_images.shape[0], training_images.shape[1] * training_images.shape[2]])
-	X_data = np.concatenate((flattened_training, np.array([last_jumps]).T), axis=1)
-	return X_data
+	iter_counter = 0
+	X_data = []
+	# (game frames, height, width)
+	for i, game in enumerate(training_images):
+		X_data.append([])
+		for j, image in enumerate(game):
+			X_data[iter_counter].append(np.append(image.ravel(), last_jumps[i][j]))
+		X_data[iter_counter] = np.array(X_data[iter_counter], dtype=np.float32)
+		iter_counter += 1
+
+	return np.array(X_data)
 
 if __name__ == "__main__":
 	run_train()
