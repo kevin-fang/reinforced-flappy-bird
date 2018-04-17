@@ -2,7 +2,7 @@
 
 import pygame, sys, os, random
 from pygame.locals import *  # noqa
-from neural_jumper import get_jump
+import neural_jumper
 from config import *
 from global_vars import *
 import numpy as np
@@ -189,12 +189,14 @@ class FlappyBird:
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
         self.frameUpdate(jump = None)
+        neural_jumper.initialize_network()
 
         while True:
             clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            logits = get_jump(image, self.last_jump_counter)[0]
+            logits = neural_jumper.get_jump(image, self.last_jump_counter)[0]
+            print("logits: {}".format(logits))
 
             # sigmoid
             logits = np.exp(logits) / (1 + np.exp(logits))[0]

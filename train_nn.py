@@ -5,19 +5,23 @@ import tensorflow as tf
 from tf_graph import FlappyGraph
 
 def train_model(X_data, actions, last_jumps, rewards, model=False):
-	flappy_graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1, None)
+	# create a Flappy tensorflow graph
+	flappy_graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1)
 	init = tf.global_variables_initializer()
 
 	with tf.Session() as sess:
 		sess.run(init)
+		# run a single train step
 		_, train_loss, acc = sess.run([flappy_graph.train_step, flappy_graph.loss, flappy_graph.accuracy], 
 										feed_dict={flappy_graph.inputs: X_data, flappy_graph.actions: actions, flappy_graph.rewards: rewards, flappy_graph.lr: 0.0001})
+		
+		# save the model
 		saver = tf.train.Saver()
-
 		if not os.path.exists(MODEL_DIR):
 			os.makedirs(MODEL_DIR)
 			saver.save(sess, os.path.join(MODEL_DIR, "trained_flappy"))
 
+# load data from file
 def run_train():
 	print("Loading data...")
 	training_images = np.load(os.path.join(DATA_DIR, "images.npy"))
@@ -29,7 +33,7 @@ def run_train():
 	
 	train_model(X_data[0], actions, last_jumps, rewards)
 
-
+# add frames since last jump as a feature to the image
 def add_jumps_to_training(training_images, last_jumps):
 	print("Parsing data...")
 	iter_counter = 0

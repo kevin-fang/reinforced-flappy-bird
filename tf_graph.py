@@ -2,7 +2,7 @@ import tensorflow as tf
 from config import *
 
 class FlappyGraph:
-    def __init__(self, img_size, game_len):
+    def __init__(self, img_size):
         L1 = 200
         output_dim = 1
         tf.reset_default_graph()
@@ -11,6 +11,7 @@ class FlappyGraph:
 
         self.rewards = tf.placeholder(tf.float32, [None], name='rewards')
 
+        # single layer neural network
         W1 = tf.Variable(tf.truncated_normal([img_size, L1], stddev=0.001, dtype=tf.float32))
         b1 = tf.Variable(tf.zeros(L1))
 
@@ -20,6 +21,7 @@ class FlappyGraph:
         y1 = tf.nn.relu(tf.matmul(self.inputs, W1) + b1)
         self.y_logits = tf.matmul(y1, W2) + b2
 
+        # policy gradient loss function
         self.loss = -tf.reduce_sum(self.rewards * tf.log(self.y_logits))
     
         self.lr = tf.placeholder(tf.float32)

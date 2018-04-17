@@ -7,11 +7,24 @@ import tensorflow as tf
 from tf_graph import FlappyGraph
 import os
 
-graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1, None)
+graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1)
 
+global initialized
+initialized = False
 sess = tf.Session()
-saver = tf.train.Saver()
-saver.restore(sess, os.path.join(MODEL_DIR, 'trained_flappy'))
+
+def initialize_network(model = False):
+	global initialized
+	if not model:
+		init = tf.global_variables_initializer()
+		sess.run(init)
+		initialized = True
+	elif model:
+		saver = tf.train.Saver()
+		saver.restore(sess, os.path.join(MODEL_DIR, 'trained_flappy'))
+		initialized = True
+	else:
+		initialized = False
 
 '''
 - Want frames alive to be the reward
@@ -20,6 +33,10 @@ saver.restore(sess, os.path.join(MODEL_DIR, 'trained_flappy'))
 
 # image takes input of the screenshot, last_jump is the number of frames since the last jump
 def get_jump(buf, last_jump):
+	if not initialized:
+		print("Neural network not initialized. Please run initialize_session() to create a new model.")
+		import sys
+		sys.exit(1)
 	image = bw(shrink(decode_image_buffer(buf)))
 	flattened_img = image.ravel().reshape([1, image.shape[0] * image.shape[1]])
 	X_data = np.append(flattened_img, last_jump)
