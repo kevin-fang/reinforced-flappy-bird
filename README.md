@@ -8,6 +8,25 @@ OpenCV (`conda install -c conda-forge opencv`), NumPy (`pip install numpy`), PyG
 
 Flappy bird implementation written in Python with PyGame from https://github.com/Max00355/FlappyBird, significantly modified to work with code.
 
+`generate_flappy_data.py` creates flappy bird games. If it is run with a model (e.g. `python generate_flappy_data.py models/trained_flappy`), it will generate games using that model. Otherwise, it will generate with a random model.
+
+`train_nn.py` and its according Jupyter notebook `Train NN.ipynb` provide a location to train a neural network.  
+Running `python train_nn.py` will initialize a network with random weights and train it on generated training data from `generate_flappy_data.py`. Running with `python train_nn.py <model_name>` will initialize the network with preselected weights and train it on generated training data from the script.
+
+`python test_flappy_results.py <model_name>` will play Flappy Bird games with an initially trained model.
+
+`neural_jumper.py` is a wrapper for the neural network to choose a jump.
+
+`tf_graph.py` contains the neural network architecture.
+
+`preprocess.py` includes preprocessing scripts to convert an image to black and white and shrink it to 20% of its original size.
+
+`config.py` contains some configuration variables, such as whether to save images and directories.
+
+`global_vars.py` contains some global variables - it should not be modified.
+
+
+#### Notes
 Flappy bird reinforcement learning agent.
 
 - for each frame, output X_t (image), y_t (move made), r_t (reward at that time step - 0.01 for alive, 1 for through pipe, -1 for death)

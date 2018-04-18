@@ -22,7 +22,7 @@ def train_model(X_data, actions, last_jumps, rewards, model=False):
 			saver.save(sess, os.path.join(MODEL_DIR, "trained_flappy"))
 
 # load data from file
-def run_train():
+def run_train(model = False):
 	print("Loading data...")
 	training_images = np.load(os.path.join(DATA_DIR, "images.npy"))
 	actions = np.load(os.path.join(DATA_DIR, "actions.npy"))
@@ -31,7 +31,7 @@ def run_train():
 	X_data = add_jumps_to_training(training_images = training_images, last_jumps = last_jumps)
 	print("Training model...")
 	
-	train_model(X_data[0], actions, last_jumps, rewards)
+	train_model(X_data[0], actions, last_jumps, rewards, model)
 
 # add frames since last jump as a feature to the image
 def add_jumps_to_training(training_images, last_jumps):
@@ -49,4 +49,7 @@ def add_jumps_to_training(training_images, last_jumps):
 	return np.array(X_data)
 
 if __name__ == "__main__":
-	run_train()
+	if len(sys.argv) == 1:
+        run_train(model = False)
+    elif len(sys.argv) == 2:
+        run_train(model = sys.argv[1])

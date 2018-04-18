@@ -21,7 +21,7 @@ def initialize_network(model = False):
 		initialized = True
 	elif model:
 		saver = tf.train.Saver()
-		saver.restore(sess, os.path.join(MODEL_DIR, 'trained_flappy'))
+		saver.restore(sess, os.path.join(MODEL_DIR, MODEL_NAME))
 		initialized = True
 	else:
 		initialized = False
