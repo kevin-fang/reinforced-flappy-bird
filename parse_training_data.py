@@ -37,7 +37,7 @@ def get_training_data(directory):
 				_, jumped, reward, frames_since_jump, _ = file.split("_")
 
 				# append the information to the different arrays
-				actions[iter_counter].append([0, 1] if jumped == 1 else [1, 0])
+				actions[iter_counter].append(1 if jumped == 1 else 0)
 				rewards[iter_counter].append(reward)
 				images[iter_counter].append(image)
 				last_jumps[iter_counter].append(frames_since_jump)
