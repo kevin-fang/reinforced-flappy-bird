@@ -32,9 +32,9 @@ MODEL_DIR = './models'
 global MODEL_PATH
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
-# where to start counting for game numbers - so we don't overwrite data
-global STARTING_NUM
-STARTING_NUM = 0
+# number of games in each training iteration
+global NUM_GAMES
+NUM_GAMES = 5
 
 # directory to hold numpy arrays
 global DATA_DIR

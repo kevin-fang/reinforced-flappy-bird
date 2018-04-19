@@ -50,6 +50,6 @@ def add_jumps_to_training(training_images, last_jumps):
 
 if __name__ == "__main__":
 	if len(sys.argv) == 1:
-        run_train(model = False)
+		run_train(model = False)
     elif len(sys.argv) == 2:
-        run_train(model = sys.argv[1])
+    	run_train(model = sys.argv[1])

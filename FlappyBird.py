@@ -8,7 +8,7 @@ import numpy as np
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
-        
+
 class FlappyGame:
     def __init__(self):
         # set up the display
@@ -51,7 +51,7 @@ class FlappyGame:
 
         # counters for image storage
         self.image_counter = 0
-        self.game_counter = STARTING_NUM
+        self.game_counter = 1
 
         self.saved_game_counter = 0
 
@@ -158,6 +158,9 @@ class FlappyGame:
 
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
+            if (self.game_counter == NUM_GAMES):
+                print("{} games finished. Exiting...".format(NUM_GAMES))
+                return True
             self.reset_game()
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
@@ -186,22 +189,17 @@ class FlappyGame:
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
-        self.frameUpdate(jump = None)
+        over = self.frameUpdate(jump = None)
         neural_jumper.initialize_network(model)
+
+        if over: return
 
         while True:
             clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            logits = neural_jumper.get_jump(image, self.last_jump_counter)[0]
-            print("logits: {}".format(logits))
-
-            # sigmoid
-            logits = np.exp(logits) / (1 + np.exp(logits))[0]
-
-            #print("logits: {}".format(logits))
+            result = neural_jumper.get_jump(image, self.last_jump_counter)[0]
             # flip a biased coin
-            result = np.random.choice(np.arange(2), 1, p=[1-logits[0], logits[0]])[0]
             #print("result: {}".format(result))
             # send events to jump or stay
             if result == 1:
@@ -219,9 +217,15 @@ class FlappyGame:
                 self.jump = 17
                 self.gravity = 5
                 self.jumpSpeed = 10
-                self.frameUpdate(jump = True)
                 self.alive_frames += 1
+                over = self.frameUpdate(jump = True)
+                if over: 
+                    pygame.quit()
+                    return
             elif event.type == STAY_CONST and not self.dead:
                 #print(self.last_jump_counter)
                 self.alive_frames += 1
-                self.frameUpdate(jump = False)               
+                over = self.frameUpdate(jump = False)      
+                if over: 
+                    pygame.quit()
+                    return

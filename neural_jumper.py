@@ -40,6 +40,7 @@ def get_jump(buf, last_jump):
 	image = bw(shrink(decode_image_buffer(buf)))
 	flattened_img = image.ravel().reshape([1, image.shape[0] * image.shape[1]])
 	X_data = np.append(flattened_img, last_jump)
-	logits = sess.run(graph.y_logits, feed_dict={graph.inputs: np.array([X_data])})
-	#print(logits)
-	return logits
+	logits, prob = sess.run([graph.y_logits, graph.sigmoid], feed_dict={graph.inputs: np.array([X_data])})
+	print(logits, prob)
+	result = np.random.choice(2, 1, p=[1-prob[0][0], prob[0][0]])
+	return result

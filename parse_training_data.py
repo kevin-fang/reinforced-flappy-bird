@@ -77,7 +77,7 @@ def calculate_adjusted_rewards(actions, rewards):
 
 	return np.array(adjusted_rewards)
 
-if __name__ == "__main__":
+def parse_data():
 	# get the training data
 	print("Processing training data...")
 	actions, last_jumps, images, rewards = map(np.array, get_training_data(TRAIN_SCREEN_DIR))
@@ -96,3 +96,6 @@ if __name__ == "__main__":
 	np.save(os.path.join(DATA_DIR, "rewards.npy"), rewards)
 	np.save(os.path.join(DATA_DIR, "adjusted_rewards.npy"), adjusted_rewards)
 	print("Completed data parsing!")
+
+if __name__ == "__main__":
+	parse_data()
