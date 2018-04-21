@@ -2,8 +2,10 @@ import pygame, sys, os, random
 from pygame.locals import *  # noqa
 import neural_jumper
 from config import *
+from preprocess import *
 from global_vars import *
 import numpy as np
+import cv2
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -70,7 +72,7 @@ class FlappyGame:
     def check_collision(self, temporary_update = False):
         # up and down pipes
 
-        wallx = self.wallx if not temporary_update else self.wallx - 4
+        wallx = self.wallx if not temporary_update else self.wallx - 2
 
         upRect = pygame.Rect(wallx,
                              360 + self.gap - self.offset + 10,
@@ -100,6 +102,7 @@ class FlappyGame:
             self.dead = True
             # make the game reset immediately
             self.bird[1] = -1
+            return True
 
         # check if bird has fallen above/below the screen
         if not 10 < self.bird[1] < CANVAS_HEIGHT:
@@ -156,22 +159,31 @@ class FlappyGame:
         if score == -1:
             dead = True
 
-        if dead:
-            print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
-            if (self.game_counter == NUM_GAMES):
-                print("{} games finished. Exiting...".format(NUM_GAMES))
-                return True
-            self.reset_game()
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
-                                                    "{img_num}_{y}_{r}_{last_jump}_capture.jpg"
+                                                    "{img_num}_{y}_{r}_{last_jump}_capture.npy"
                                                         .format(y=1 if jump else 0, 
                                                                 r=score, 
                                                                 last_jump=self.last_jump_counter, 
                                                                 img_num=self.image_counter))
+
+        if dead:
+            print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
+            if (self.game_counter == NUM_GAMES):
+                if SAVING:
+                    image = pygame.image.tostring(self.screen, "RGB")
+                    np.save(screenshot_name, bw(shrink(decode_image_buffer(image))))
+                    #pygame.image.save(self.screen, screenshot_name)
+
+                print("{} games finished. Exiting...".format(NUM_GAMES))
+                return True
+            self.reset_game()
         
         if SAVING:
-            pygame.image.save(self.screen, screenshot_name)
+            image = pygame.image.tostring(self.screen, "RGB")
+            np.save(screenshot_name, bw(shrink(decode_image_buffer(image))))
+            #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
+            #pygame.image.save(self.screen, screenshot_name)
             
         if dead:
             # reset the image counter and increment the game counter

@@ -33,7 +33,7 @@ def get_training_data(directory):
 
 			for file in files:
 				# load image from file
-				image = shrink(cv2.imread(os.path.join(*path, file), cv2.IMREAD_GRAYSCALE))
+				image = np.load(os.path.join(*path, file))
 				_, jumped, reward, frames_since_jump, _ = file.split("_")
 
 				# append the information to the different arrays
@@ -69,7 +69,7 @@ def calculate_adjusted_rewards(actions, rewards):
 			# calculate the adjusted reward, accounting for future frames.
 			for k, future_reward in enumerate(rewards[i][j:]):
 				#print("gamma ** j: {}, future reward: {}".format(gamma ** j, future_reward))
-				adj_reward += (gamma ** j) * future_reward
+				adj_reward += (gamma ** k) * future_reward
 
 			adjusted_rewards[iter_counter].append(adj_reward)
 		adjusted_rewards[iter_counter] = np.array(adjusted_rewards[iter_counter], dtype=np.float32)
