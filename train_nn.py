@@ -63,41 +63,16 @@ def train_iteration():
         #print(all_x_data.shape, all_rewards.shape, all_actions.shape)
 
         rwds, new_prob, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
-                    feed_dict={
+                    feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-4}
+                        flappy_graph.lr: 1e-4
+                        }
                     )
             #print(new_prob.shape, rwds.shape)
-            #print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-
-
-    '''
-    for i in range(NUM_GAMES):
-        print("Training on game {}".format(i))
-        for j in range(5):
-            randomize = np.arange(len(X_data[i]))
-            np.random.shuffle(randomize)
-            X_i = X_data[i][randomize]
-            actions_i = actions[i][randomize]
-            rewards_i = rewards[i][randomize]
-            #print(sess.run([tf.shape(flappy_graph.y_logits), tf.shape(flappy_graph.sigmoid), tf.shape(flappy_graph.actions)], feed_dict={
-            #                flappy_graph.inputs: X_data_i 
-            #                flappy_graph.actions: actions_, 
-            #                flappy_graph.rewards: rewards[i], 
-            #                flappy_graph.lr: 1e-4}))
-            rwds, new_prob, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
-                        feed_dict={
-                            flappy_graph.inputs: X_i, 
-                            flappy_graph.actions: actions_i, 
-                            flappy_graph.rewards: rewards_i, 
-                            flappy_graph.lr: 1e-5}
-                        )
-            #print(new_prob.shape, rwds.shape)
-            #print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-    '''
-
+        print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
+       #print("grads", grads)
 
 import run_agent
 save_model()

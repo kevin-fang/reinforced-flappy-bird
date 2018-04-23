@@ -42,3 +42,6 @@ X, Y, r are placeholders. Calculate loss whih is negative sum over all T's of Rt
 - Calculate the loss and create train step operation based on loss. 
 - RMS prop
 - Rerun the game.
+
+- If gradient > 0, jumping more should increase the loss
+- If not jumping, gradient should be negative and if it is, gradient should be positive.
