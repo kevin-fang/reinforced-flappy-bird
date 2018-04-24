@@ -41,7 +41,7 @@ def train_iteration():
     for i, _ in enumerate(X_data):
         game = X_data[i].ravel().reshape(-1, X_data[i].shape[0])
         all_x_data = np.append(all_x_data, game)
-    all_x_data = all_x_data.reshape([-1, 11361])
+    all_x_data = all_x_data.reshape([-1, int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1])
 
     all_actions = np.array([])
     for i, _ in enumerate(actions):
@@ -53,7 +53,7 @@ def train_iteration():
         game = rewards[i].ravel()
         all_rewards = np.append(all_rewards, game)
 
-    for j in range(5):
+    for j in range(2):
         randomize = np.arange(len(all_rewards))
         np.random.shuffle(randomize)
         all_x_data = all_x_data[randomize]
@@ -62,22 +62,24 @@ def train_iteration():
 
         #print(all_x_data.shape, all_rewards.shape, all_actions.shape)
 
-        rwds, new_prob, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
+        grads, b3, rwds, new_prob, _, train_loss = sess.run([flappy_graph.grads, flappy_graph.b3, flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
                     feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-4
+                        flappy_graph.lr: 1e-3
                         }
                     )
             #print(new_prob.shape, rwds.shape)
         print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-       #print("grads", grads)
+        print("grads", list(zip(grads[0], all_actions)), grads[1])
+        print("last bias", b3)
+        np.save("grads.npy", grads)
 
 import run_agent
 save_model()
 
-for i in range(100):
+for i in range(1000):
     run_agent.run()
     train_iteration()
     save_model()

@@ -45,3 +45,8 @@ X, Y, r are placeholders. Calculate loss whih is negative sum over all T's of Rt
 
 - If gradient > 0, jumping more should increase the loss
 - If not jumping, gradient should be negative and if it is, gradient should be positive.
+
+Try doing linear model (3 weights + bias)
+- vertical distance from gap
+- y coordinate of bird
+- horizontal distance from pipes.

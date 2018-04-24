@@ -125,7 +125,7 @@ class FlappyGame:
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
         elif self.wallx - 2 < -80:
-            return 1
+            return 3
         else:
             return .01
 
@@ -166,12 +166,13 @@ class FlappyGame:
                                                                 last_jump=self.last_jump_counter, 
                                                                 img_num=self.image_counter))
 
+        image = pygame.image.tostring(self.screen, "RGB")
+        image_processed = bw(shrink(decode_image_buffer(image)))
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             if (self.game_counter == NUM_GAMES):
                 if SAVING:
-                    image = pygame.image.tostring(self.screen, "RGB")
-                    np.save(screenshot_name, bw(shrink(decode_image_buffer(image))))
+                    np.save(screenshot_name, image_processed)
                     #pygame.image.save(self.screen, screenshot_name)
 
                 print("{} games finished. Exiting...".format(NUM_GAMES))
@@ -180,7 +181,7 @@ class FlappyGame:
         
         if SAVING:
             image = pygame.image.tostring(self.screen, "RGB")
-            np.save(screenshot_name, bw(shrink(decode_image_buffer(image))))
+            np.save(screenshot_name, image_processed)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
             

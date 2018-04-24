@@ -38,7 +38,7 @@ def get_training_data(directory):
 				# append the information to the different arrays
 				actions[iter_counter].append(1 if int(jumped) == 1 else 0)
 				rewards[iter_counter].append(float(reward))
-				images[iter_counter].append(image)
+				images[iter_counter].append(image / 255)
 				last_jumps[iter_counter].append(frames_since_jump)
 				num_saved += 1
 				#print("Parsed file: {}".format(file))
