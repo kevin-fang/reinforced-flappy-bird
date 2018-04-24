@@ -6,6 +6,9 @@ import os
 global HEADLESS
 HEADLESS = False
 
+global NUM_NEURAL_DIMS
+NUM_NEURAL_DIMS = 5
+
 # leave the following untouched 
 
 global CANVAS_HEIGHT

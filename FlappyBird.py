@@ -83,6 +83,7 @@ class FlappyGame:
                                self.wallDown.get_width() - 10,
                                self.wallDown.get_height())
         return upRect.colliderect(self.bird) or downRect.colliderect(self.bird)
+        #return False
 
     def birdUpdate(self):
         # if jumping, account for acceleration and lower the bird
@@ -125,7 +126,7 @@ class FlappyGame:
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
         elif self.wallx - 2 < -80:
-            return 1
+            return self.counter
         else:
             return .01
 
@@ -172,7 +173,7 @@ class FlappyGame:
         print("BirdY: {}, distance from wall: {}, vertical distance: {}"
                 .format(int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY)))
 
-        data_arr = np.array([int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY)])
+        data_arr = np.array([int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY), self.gravity])
 
         self.data = data_arr
 

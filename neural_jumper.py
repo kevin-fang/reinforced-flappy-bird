@@ -7,7 +7,7 @@ import tensorflow as tf
 from tf_graph import FlappyGraph
 import os
 
-graph = FlappyGraph(3 + 1)
+graph = FlappyGraph(NUM_NEURAL_DIMS)
 
 global initialized
 initialized = False

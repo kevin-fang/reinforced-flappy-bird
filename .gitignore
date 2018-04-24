@@ -10,3 +10,4 @@ log/
 screenshots_test/
 *.jpg
 .ipynb_checkpoints/
+models_old/
