@@ -64,7 +64,7 @@ class FlappyGame:
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
         self.wallx -= 2
-        if self.wallx < -80:
+        if self.wallx < -40:
             self.wallx = 400
             self.counter += 1
             self.offset = random.randint(-110, 110)
@@ -125,7 +125,7 @@ class FlappyGame:
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
         elif self.wallx - 2 < -80:
-            return 3
+            return 1
         else:
             return .01
 
@@ -168,11 +168,19 @@ class FlappyGame:
 
         image = pygame.image.tostring(self.screen, "RGB")
         image_processed = bw(shrink(decode_image_buffer(image)))
+
+        print("BirdY: {}, distance from wall: {}, vertical distance: {}"
+                .format(int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY)))
+
+        data_arr = np.array([int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY)])
+
+        self.data = data_arr
+
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             if (self.game_counter == NUM_GAMES):
                 if SAVING:
-                    np.save(screenshot_name, image_processed)
+                    np.save(screenshot_name, data_arr)
                     #pygame.image.save(self.screen, screenshot_name)
 
                 print("{} games finished. Exiting...".format(NUM_GAMES))
@@ -180,8 +188,7 @@ class FlappyGame:
             self.reset_game()
         
         if SAVING:
-            image = pygame.image.tostring(self.screen, "RGB")
-            np.save(screenshot_name, image_processed)
+            np.save(screenshot_name, data_arr)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
             
@@ -210,7 +217,7 @@ class FlappyGame:
             clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            result = neural_jumper.get_jump(image, self.last_jump_counter)[0]
+            result = neural_jumper.get_jump(self.data, self.last_jump_counter)[0]
             # flip a biased coin
             #print("result: {}".format(result))
             # send events to jump or stay

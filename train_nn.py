@@ -16,7 +16,7 @@ def add_jumps_to_training(training_images, last_jumps):
 
     return np.array(X_data)
 
-flappy_graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1)
+flappy_graph = FlappyGraph(3 + 1)
 init = tf.global_variables_initializer()
 global sess
 sess = tf.Session()
@@ -28,6 +28,9 @@ def save_model():
     if not os.path.exists(MODEL_DIR):
         os.makedirs(MODEL_DIR)
     saver.save(sess, MODEL_PATH)
+
+def restore_model():
+    saver.restore(sess, MODEL_PATH)
 
 def train_iteration():
     print("Loading data...")
@@ -41,7 +44,7 @@ def train_iteration():
     for i, _ in enumerate(X_data):
         game = X_data[i].ravel().reshape(-1, X_data[i].shape[0])
         all_x_data = np.append(all_x_data, game)
-    all_x_data = all_x_data.reshape([-1, int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1])
+    all_x_data = all_x_data.reshape([-1, 3 + 1])
 
     all_actions = np.array([])
     for i, _ in enumerate(actions):
@@ -72,9 +75,8 @@ def train_iteration():
                     )
             #print(new_prob.shape, rwds.shape)
         print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-        print("grads", list(zip(grads[0], all_actions)), grads[1])
-        print("last bias", b3)
-        np.save("grads.npy", grads)
+        print("grads", grads)
+        print(b3)
 
 import run_agent
 save_model()
