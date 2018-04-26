@@ -171,9 +171,9 @@ class FlappyGame:
         image_processed = bw(shrink(decode_image_buffer(image)))
 
         # bird Y, dist from pipe, offset, distance from down pipe, distance from up pipe, gravity
-        data_arr = np.array([int(self.birdY), self.wallx - 120, self.offset, self.birdY - 360 + self.gap - self.offset,  self.birdY + 0 - self.gap - self.offset, self.gravity])
+        data_arr = np.array([CANVAS_HEIGHT - int(self.birdY), self.wallx - 120, self.offset, self.birdY - 360 + self.gap - self.offset,  self.birdY + 0 - self.gap - self.offset, self.gravity])
 
-        #print(data_arr)
+        print(data_arr)
 
         self.data = data_arr
 

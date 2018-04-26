@@ -4,7 +4,7 @@ import numpy as np
 
 class FlappyGraph:
     def __init__(self, img_size):
-        L1 = 64
+        L1 = 3
         output_dim = 1
         tf.reset_default_graph()
         self.inputs = tf.placeholder(tf.float32, [None, img_size], name='inputs')
