@@ -75,7 +75,7 @@ def train_iteration():
         #print(all_x_data.shape, all_rewards.shape, all_actions.shape)
 
         # run the training
-        grads, b3, rwds, new_prob, _, train_loss = sess.run([flappy_graph.grads, flappy_graph.b3, flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
+        rwds, new_prob, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
                     feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
@@ -86,8 +86,8 @@ def train_iteration():
         
         # print debugging information
         print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-        print("grads", grads)
-        print(b3)
+        #print("grads", grads)
+        #print(b3)
 
 import run_agent
 

@@ -7,7 +7,7 @@ global HEADLESS
 HEADLESS = False
 
 global NUM_NEURAL_DIMS
-NUM_NEURAL_DIMS = 5
+NUM_NEURAL_DIMS = 7
 
 # leave the following untouched 
 

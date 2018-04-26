@@ -126,12 +126,12 @@ class FlappyGame:
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
         elif self.wallx - 2 < -80:
-            return self.counter
+            return self.counter + 1
         else:
             return .01
 
     def frameUpdate(self, jump):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill((0, 0, 0))
         # keep this line commented out for training - less distracting background
         #self.screen.blit(self.background, (0, 0))
 
@@ -141,7 +141,7 @@ class FlappyGame:
                          (self.wallx, 0 - self.gap - self.offset))
         self.screen.blit(self.font.render(str(self.counter),
                                     0,
-                                    (0, 0, 0)),
+                                    (255, 255, 255)),
                                     (200, 50))
         # change sprite 
         if self.jump:
@@ -170,10 +170,10 @@ class FlappyGame:
         image = pygame.image.tostring(self.screen, "RGB")
         image_processed = bw(shrink(decode_image_buffer(image)))
 
-        print("BirdY: {}, distance from wall: {}, vertical distance: {}"
-                .format(int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY)))
+        # bird Y, dist from pipe, offset, distance from down pipe, distance from up pipe, gravity
+        data_arr = np.array([int(self.birdY), self.wallx - 120, self.offset, self.birdY - 360 + self.gap - self.offset,  self.birdY + 0 - self.gap - self.offset, self.gravity])
 
-        data_arr = np.array([int(self.birdY), self.wallx - 120, int(360 + self.gap - self.birdY), self.gravity])
+        #print(data_arr)
 
         self.data = data_arr
 
