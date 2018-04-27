@@ -6,6 +6,7 @@ from config import *
 import tensorflow as tf
 from tf_graph import FlappyGraph
 import os
+from sklearn import preprocessing
 
 graph = FlappyGraph(NUM_NEURAL_DIMS)
 
@@ -40,6 +41,7 @@ def get_jump(data_arr, last_jump):
 	#image = bw(shrink(decode_image_buffer(buf)))
 
 	X_data = np.append(data_arr, last_jump)
+	#print(X_data)
 	logits, prob = sess.run([graph.y_logits, graph.sigmoid], feed_dict={graph.inputs: np.array([X_data])})
 	print(logits, prob)
 	result = np.random.choice(2, 1, p=[1-prob[0][0], prob[0][0]])

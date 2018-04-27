@@ -2,6 +2,7 @@ import random, os, numpy as np, tensorflow as tf
 from tf_graph import FlappyGraph
 from config import *
 import sys
+from sklearn import preprocessing
 from datetime import datetime
 
 # add frames since last jump to training data
@@ -63,7 +64,8 @@ def train_iteration():
         game = rewards[i].ravel()
         all_rewards = np.append(all_rewards, game)
 
-    for j in range(2):
+
+    for j in range(3):
 
         # shuffle frames in the game data
         randomize = np.arange(len(all_rewards))
@@ -72,19 +74,24 @@ def train_iteration():
         all_rewards = all_rewards[randomize]
         all_actions = all_actions[randomize]
 
+        #all_actions_diff = np.array(all_actions, copy=True)
+        #all_actions_diff[all_rewards < 0] = 1 - all_actions[all_rewards < 0]
         #print(all_x_data.shape, all_rewards.shape, all_actions.shape)
 
         # run the training
-        rwds, new_prob, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
+        W1, b1, grads, rwds, new_prob, _, train_loss = sess.run([flappy_graph.W1, flappy_graph.b1, flappy_graph.grads, flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
                     feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-2
+                        flappy_graph.lr: 1e-4
                         }
                     )
         
         # print debugging information
+        #print("W1:", W1)
+        #print("b1", b1)
+        print("grads", grads)
         print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
         #print("grads", grads)
         #print(b3)
@@ -96,13 +103,15 @@ def get_time():
     return str(datetime.now())
 
 # determine whether to save the model or generate a new one
+
+timestamp = get_time()
 if len(sys.argv) == 1:
     save_model()
-    with open('training_log.txt', 'w') as log:
+    with open('log/training_log_{}.txt'.format(timestamp), 'w') as log:
         log.write("[{}] Generating new model...\n".format(get_time()))
 else:
     restore_model()
-    with open('training_log.txt', 'w') as log:
+    with open('log/training_log_{}.txt'.format(timestamp), 'w') as log:
         log.write("[{}] Loading pretrained model...\n".format(get_time()))
 
 num_iterations = 1
@@ -111,6 +120,6 @@ while True:
     run_agent.run()
     train_iteration()
     save_model()
-    with open('training_log.txt', 'a') as log:
+    with open('log/training_log_{}.txt'.format(timestamp), 'a') as log:
         log.write("[{}] Finished iteration: {}\n".format(get_time(), num_iterations))
     num_iterations += 1
