@@ -65,6 +65,7 @@ def train_iteration():
         all_rewards = np.append(all_rewards, game)
 
 
+    losses = []
     for j in range(3):
 
         # shuffle frames in the game data
@@ -84,7 +85,7 @@ def train_iteration():
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-4
+                        flappy_graph.lr: 1e-3
                         }
                     )
         
@@ -95,6 +96,8 @@ def train_iteration():
         print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
         #print("grads", grads)
         #print(b3)
+        losses.append(train_loss)
+    return losses
 
 import run_agent
 
@@ -104,22 +107,22 @@ def get_time():
 
 # determine whether to save the model or generate a new one
 
-timestamp = get_time()
+timestamp = '{0:%Y_%m_%d_%H_%M_%S}'.format(datetime.now())
 if len(sys.argv) == 1:
     save_model()
-    with open('log/training_log_{}.txt'.format(timestamp), 'w') as log:
+    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
         log.write("[{}] Generating new model...\n".format(get_time()))
 else:
     restore_model()
-    with open('log/training_log_{}.txt'.format(timestamp), 'w') as log:
+    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
         log.write("[{}] Loading pretrained model...\n".format(get_time()))
 
 num_iterations = 1
 
 while True:
     run_agent.run()
-    train_iteration()
+    loss = train_iteration()
     save_model()
     with open('log/training_log_{}.txt'.format(timestamp), 'a') as log:
-        log.write("[{}] Finished iteration: {}\n".format(get_time(), num_iterations))
+        log.write("[{}] Finished iteration: {}, loss = {}\n".format(get_time(), num_iterations, loss))
     num_iterations += 1

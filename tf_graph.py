@@ -32,7 +32,7 @@ class FlappyGraph:
         
         reshaped_actions = tf.reshape(self.actions, [-1, 1])
         self.new_prob = ((reshaped_actions - 1) + self.sigmoid) * (2 * reshaped_actions - 1)
-        self.loss = tf.reduce_mean(self.rewards * self.new_prob)
+        self.loss = tf.reduce_mean(self.rewards * tf.nn.sigmoid_cross_entropy_with_logits(logits=self.y_logits, labels=reshaped_actions))
     
         self.grads = tf.gradients(self.loss, [self.b3, self.W3])
         self.lr = tf.placeholder(tf.float32)

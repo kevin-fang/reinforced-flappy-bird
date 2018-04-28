@@ -55,7 +55,7 @@ def get_training_data(directory):
 
 def calculate_adjusted_rewards(actions, rewards):
 	adjusted_rewards = []
-	gamma = 0.85
+	gamma = 0.999
 	iter_counter = 0
 	# loop through each game
 	for i, game in enumerate(rewards):

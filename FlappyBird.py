@@ -208,7 +208,7 @@ class FlappyGame:
 
         pygame.display.update()
 
-    def run(self, model = False):
+    def run(self, model = False, testing = False):
         # initialize game and game counter font
         clock = pygame.time.Clock()
         pygame.font.init()
@@ -220,7 +220,10 @@ class FlappyGame:
         if over: return
 
         while True:
-            clock.tick()
+            if testing:
+                clock.tick(60)
+            else:
+                clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
             result = neural_jumper.get_jump(self.data, self.last_jump_counter)[0]
