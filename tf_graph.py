@@ -19,7 +19,7 @@ class FlappyGraph:
         self.b1 = b1
         self.W1 = W1
         
-        W3 = tf.Variable(tf.truncated_normal([input_dims, output_dim], stddev=0.01, dtype=tf.float32))
+        W3 = tf.Variable(tf.truncated_normal([L1, output_dim], stddev=0.01, dtype=tf.float32))
         b3 = tf.Variable(tf.ones(output_dim))
         self.b3 = b3
 
@@ -27,7 +27,7 @@ class FlappyGraph:
 
         self.W3 = W3
         
-        self.y_logits = tf.matmul(self.inputs, W3) + b3
+        self.y_logits = tf.matmul(y1, W3) + b3
         self.sigmoid = tf.sigmoid(self.y_logits)
         
         reshaped_actions = tf.reshape(self.actions, [-1, 1])

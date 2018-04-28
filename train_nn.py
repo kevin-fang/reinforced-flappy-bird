@@ -7,7 +7,7 @@ from datetime import datetime
 
 # add frames since last jump to training data
 def add_jumps_to_training(training_images, last_jumps):
-    print("Parsing data...")
+    print("Appending jumps to training data...")
     iter_counter = 0
     X_data = []
     # (game frames, height, width)
@@ -85,7 +85,7 @@ def train_iteration():
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-3
+                        flappy_graph.lr: 1e-2
                         }
                     )
         
