@@ -38,7 +38,7 @@ def get_training_data(directory):
 				# append the information to the different arrays
 				actions[iter_counter].append(1 if int(jumped) == 1 else 0)
 				rewards[iter_counter].append(float(reward))
-				images[iter_counter].append(image / 255)
+				images[iter_counter].append(image)
 				last_jumps[iter_counter].append(frames_since_jump)
 				num_saved += 1
 				#print("Parsed file: {}".format(file))
@@ -50,12 +50,12 @@ def get_training_data(directory):
 				[rewards, actions, last_jumps, images])
 			iter_counter += 1
 
-	print("{} images saved.".format(num_saved))
+	print("{} frames saved.".format(num_saved))
 	return actions, last_jumps, images, rewards
 
 def calculate_adjusted_rewards(actions, rewards):
 	adjusted_rewards = []
-	gamma = 0.99
+	gamma = 0.999
 	iter_counter = 0
 	# loop through each game
 	for i, game in enumerate(rewards):
@@ -94,7 +94,7 @@ def parse_data():
 	np.save(os.path.join(DATA_DIR, "images.npy"), images)
 	np.save(os.path.join(DATA_DIR, "rewards.npy"), rewards)
 	np.save(os.path.join(DATA_DIR, "adjusted_rewards.npy"), adjusted_rewards)
-	print("Completed data parsing!")
+	print("Completed data parsing.")
 
 if __name__ == "__main__":
 	parse_data()

@@ -24,14 +24,14 @@ class FlappyGame:
 
         self.bird = pygame.Rect(65, 50, 50, 50)
         self.background = pygame.image.load("assets/background.png").convert()
-        self.birdSprites = [pygame.image.load("assets/1.png").convert(),
-                            pygame.image.load("assets/2.png").convert()]
+        self.birdSprites = [pygame.image.load("assets/1.png").convert_alpha(),
+                            pygame.image.load("assets/2.png").convert_alpha()]
         # create pipes
-        self.wallUp = pygame.image.load("assets/bottom.png").convert()
-        self.wallDown = pygame.image.load("assets/top.png").convert()
+        self.wallUp = pygame.image.load("assets/bottom.png").convert_alpha()
+        self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
 
         # set the gap between the pipes
-        self.gap = 250
+        self.gap = 200
 
         self.wallx = 400
         self.birdY = 350
@@ -64,7 +64,7 @@ class FlappyGame:
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
         self.wallx -= 2
-        if self.wallx < -80:
+        if self.wallx < -40:
             self.wallx = 400
             self.counter += 1
             self.offset = random.randint(-110, 110)
@@ -125,22 +125,21 @@ class FlappyGame:
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
         elif self.wallx - 2 < -80:
-            return 3
+            return 1
         else:
             return .01
 
     def frameUpdate(self, jump):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill((0, 0, 0))
         # keep this line commented out for training - less distracting background
-        #self.screen.blit(self.background, (0, 0))
-
+        self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.wallUp,
                          (self.wallx, 360 + self.gap - self.offset))
         self.screen.blit(self.wallDown,
                          (self.wallx, 0 - self.gap - self.offset))
         self.screen.blit(self.font.render(str(self.counter),
                                     0,
-                                    (0, 0, 0)),
+                                    (255, 255, 255)),
                                     (200, 50))
         # change sprite 
         if self.jump:
@@ -154,7 +153,7 @@ class FlappyGame:
         dead = self.birdUpdate()
 
         score = self.get_score()
-        if score != 0.01: print(score)
+        #if score != 0.01: print(score)
 
         if score == -1:
             dead = True
@@ -166,13 +165,28 @@ class FlappyGame:
                                                                 last_jump=self.last_jump_counter, 
                                                                 img_num=self.image_counter))
 
-        image = pygame.image.tostring(self.screen, "RGB")
-        image_processed = bw(shrink(decode_image_buffer(image)))
+        #image = pygame.image.tostring(self.screen, "RGB")
+        #image_processed = bw(shrink(decode_image_buffer(image)))
+        
+        bottom_dist = 360 + self.gap - self.offset
+        top_dist = self.gap - self.offset
+        # bird Y, dist from pipe, offset, distance from down pipe, distance from up pipe, gravity
+        data_arr = np.array([
+            CANVAS_HEIGHT - self.birdY, 
+            self.wallx - 120, 
+            self.birdY - top_dist,
+            bottom_dist - self.birdY,
+            self.gravity], 
+            dtype=np.float32)
+        #print("bird y: {}, distance from wall: {}, offset: {}, distance from bottom pipe: {}, distance from top pipe: {}, gravity".format(data_arr[0], data_arr[1], data_arr[2], data_arr[3], data_arr[4], data_arr[5]))
+        #print("bird y: {}, bottom: {}, top: {}".format(self.birdY, 360 + self.gap - self.offset, self.gap - self.offset))
+        self.data = data_arr
+
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             if (self.game_counter == NUM_GAMES):
                 if SAVING:
-                    np.save(screenshot_name, image_processed)
+                    np.save(screenshot_name, data_arr)
                     #pygame.image.save(self.screen, screenshot_name)
 
                 print("{} games finished. Exiting...".format(NUM_GAMES))
@@ -180,8 +194,7 @@ class FlappyGame:
             self.reset_game()
         
         if SAVING:
-            image = pygame.image.tostring(self.screen, "RGB")
-            np.save(screenshot_name, image_processed)
+            np.save(screenshot_name, data_arr)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
             
@@ -195,7 +208,7 @@ class FlappyGame:
 
         pygame.display.update()
 
-    def run(self, model = False):
+    def run(self, model = False, testing = False):
         # initialize game and game counter font
         clock = pygame.time.Clock()
         pygame.font.init()
@@ -207,10 +220,13 @@ class FlappyGame:
         if over: return
 
         while True:
-            clock.tick()
+            if testing:
+                clock.tick(60)
+            else:
+                clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            result = neural_jumper.get_jump(image, self.last_jump_counter)[0]
+            result = neural_jumper.get_jump(self.data, self.last_jump_counter)[0]
             # flip a biased coin
             #print("result: {}".format(result))
             # send events to jump or stay

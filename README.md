@@ -50,3 +50,5 @@ Try doing linear model (3 weights + bias)
 - vertical distance from gap
 - y coordinate of bird
 - horizontal distance from pipes.
+
+- try to come up with constant initialization that makes sense

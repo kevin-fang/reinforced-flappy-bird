@@ -6,8 +6,9 @@ from config import *
 import tensorflow as tf
 from tf_graph import FlappyGraph
 import os
+from sklearn import preprocessing
 
-graph = FlappyGraph(int((CANVAS_WIDTH * IMG_SCALE_FACTOR) * round(CANVAS_HEIGHT * IMG_SCALE_FACTOR)) + 1)
+graph = FlappyGraph(NUM_NEURAL_DIMS)
 
 global initialized
 initialized = False
@@ -21,7 +22,7 @@ def initialize_network(model = False):
 		initialized = True
 	elif model:
 		saver = tf.train.Saver()
-		saver.restore(sess, os.path.join(MODEL_DIR, MODEL_NAME))
+		saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
 		initialized = True
 	else:
 		initialized = False
@@ -32,14 +33,15 @@ def initialize_network(model = False):
 '''
 
 # image takes input of the screenshot, last_jump is the number of frames since the last jump
-def get_jump(buf, last_jump):
+def get_jump(data_arr, last_jump):
 	if not initialized:
 		print("Neural network not initialized. Please run initialize_session() to create a new model.")
 		import sys
 		sys.exit(1)
-	image = bw(shrink(decode_image_buffer(buf)))
-	flattened_img = image.ravel().reshape([1, image.shape[0] * image.shape[1]])
-	X_data = np.append(flattened_img, last_jump)
+	#image = bw(shrink(decode_image_buffer(buf)))
+
+	X_data = np.append(data_arr, last_jump)
+	#print(X_data)
 	logits, prob = sess.run([graph.y_logits, graph.sigmoid], feed_dict={graph.inputs: np.array([X_data])})
 	print(logits, prob)
 	result = np.random.choice(2, 1, p=[1-prob[0][0], prob[0][0]])

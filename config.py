@@ -6,6 +6,9 @@ import os
 global HEADLESS
 HEADLESS = False
 
+global NUM_NEURAL_DIMS
+NUM_NEURAL_DIMS = 6
+
 # leave the following untouched 
 
 global CANVAS_HEIGHT
@@ -34,7 +37,7 @@ MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 # number of games in each training iteration
 global NUM_GAMES
-NUM_GAMES = 5
+NUM_GAMES = 20
 
 # directory to hold numpy arrays
 global DATA_DIR

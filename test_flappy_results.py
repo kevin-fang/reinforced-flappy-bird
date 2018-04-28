@@ -5,7 +5,7 @@ from config import *
 from FlappyBird import FlappyGame
 
 def start(model):
-	FlappyGame().run(model = model)
+	FlappyGame().run(model = model, testing = True)
 
 # just play flappy bird with a pretrained model
 if __name__ == "__main__":
