@@ -66,7 +66,7 @@ def train_iteration():
 
 
     losses = []
-    for j in range(3):
+    for j in range(4):
 
         # shuffle frames in the game data
         randomize = np.arange(len(all_rewards))
@@ -85,7 +85,7 @@ def train_iteration():
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-2
+                        flappy_graph.lr: 1e-3
                         }
                     )
         
@@ -108,14 +108,18 @@ def get_time():
 # determine whether to save the model or generate a new one
 
 timestamp = '{0:%Y_%m_%d_%H_%M_%S}'.format(datetime.now())
+
 if len(sys.argv) == 1:
-    save_model()
-    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
-        log.write("[{}] Generating new model...\n".format(get_time()))
-else:
+    print("Usage: \nGenerate new model: python train_nn.py -n\nLoad existing model: python train_nn.py -l")
+    sys.exit(1)
+elif sys.argv[1] == "-l":
     restore_model()
     with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
         log.write("[{}] Loading pretrained model...\n".format(get_time()))
+elif sys.argv[1] == "-n":
+    save_model()
+    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
+        log.write("[{}] Generating new model...\n".format(get_time()))
 
 num_iterations = 1
 

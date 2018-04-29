@@ -12,7 +12,8 @@ def makeDirIfNotExist(directory):
         os.makedirs(directory)
 
 class FlappyGame:
-    def __init__(self):
+    def __init__(self, testing = False):
+        self.testing = testing
         # set up the display
         if HEADLESS:
            # os.environ["SDL_VIDEODRIVER"] = "dummy"
@@ -31,7 +32,7 @@ class FlappyGame:
         self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
 
         # set the gap between the pipes
-        self.gap = 200
+        self.gap = 150
 
         self.wallx = 400
         self.birdY = 350
@@ -41,7 +42,7 @@ class FlappyGame:
         self.dead = False
         self.sprite = 0
 
-        self.offset = random.randint(-110, 110)
+        self.offset = random.randint(-150, 150)
 
         # point counter
         self.counter = 0
@@ -64,7 +65,7 @@ class FlappyGame:
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
         self.wallx -= 2
-        if self.wallx < -40:
+        if self.wallx < -30:
             self.wallx = 400
             self.counter += 1
             self.offset = random.randint(-110, 110)
@@ -126,7 +127,7 @@ class FlappyGame:
         #print("bird y: ", self.bird[1])
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
-        elif self.wallx <= -20:
+        elif self.wallx <= -25:
             return 1
         else:
             return .01
@@ -161,6 +162,10 @@ class FlappyGame:
             print("finished")
             dead = True
 
+        if not self.testing and score == 1:
+            print('score =1')
+            dead = True
+
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
                                                     "{img_num}_{y}_{r}_{last_jump}_capture.npy"
                                                         .format(y=1 if jump else 0, 
@@ -187,11 +192,11 @@ class FlappyGame:
 
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
+            
+            if SAVING:
+                np.save(screenshot_name, data_arr)
+                #pygame.image.save(self.screen, screenshot_name)
             if (self.game_counter == NUM_GAMES):
-                if SAVING:
-                    np.save(screenshot_name, data_arr)
-                    #pygame.image.save(self.screen, screenshot_name)
-
                 print("{} games finished. Exiting...".format(NUM_GAMES))
                 return True
             self.reset_game()

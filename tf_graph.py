@@ -13,7 +13,7 @@ class FlappyGraph:
         self.rewards = tf.placeholder(tf.float32, [None], name='rewards')
 
         # single layer neural network
-        W1 = tf.Variable(tf.truncated_normal([input_dims, L1], stddev=0.01, dtype=tf.float32))
+        W1 = tf.Variable(-tf.truncated_normal([input_dims, L1], stddev=0.01, dtype=tf.float32))
         b1 = tf.Variable(tf.ones(L1))
 
         self.b1 = b1
