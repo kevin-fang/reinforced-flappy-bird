@@ -111,6 +111,7 @@ class FlappyGame:
         return False
 
     def reset_game(self):
+        print('resetting')
         self.alive_frames = 0
         self.bird[1] = 350
         self.birdY = 350
@@ -121,10 +122,11 @@ class FlappyGame:
         self.gravity = 5
 
     def get_score(self):
+        #print(self.wallx)
         #print("bird y: ", self.bird[1])
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
             return -1
-        elif self.wallx - 2 < -80:
+        elif self.wallx <= -20:
             return 1
         else:
             return .01
@@ -154,8 +156,9 @@ class FlappyGame:
 
         score = self.get_score()
         #if score != 0.01: print(score)
-
+        #print(score)
         if score == -1:
+            print("finished")
             dead = True
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
@@ -193,7 +196,7 @@ class FlappyGame:
                 return True
             self.reset_game()
         
-        if SAVING:
+        if SAVING and not dead:
             np.save(screenshot_name, data_arr)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
