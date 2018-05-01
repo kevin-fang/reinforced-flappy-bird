@@ -17,12 +17,17 @@ CANVAS_HEIGHT = 708
 global CANVAS_WIDTH
 CANVAS_WIDTH = 400
 
+# used for image reading - deprecated, for now
 global IMG_SCALE_FACTOR
 IMG_SCALE_FACTOR = 0.2
 
 # whether to save images to disk (needed if training)
 global SAVING
 SAVING = True
+
+# log directory
+global LOG_DIR
+LOG_DIR = './log'
 
 # name of model to save
 global MODEL_NAME

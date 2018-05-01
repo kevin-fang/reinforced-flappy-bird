@@ -53,9 +53,10 @@ def get_training_data(directory):
 	print("{} frames saved.".format(num_saved))
 	return actions, last_jumps, images, rewards
 
+# calculate adjusted rewards to account for future rewards
 def calculate_adjusted_rewards(actions, rewards):
 	adjusted_rewards = []
-	gamma = 0.99
+	gamma = 0.9
 	iter_counter = 0
 	# loop through each game
 	for i, game in enumerate(rewards):

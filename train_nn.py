@@ -66,21 +66,21 @@ def train_iteration():
 
 
     losses = []
-    for j in range(4):
+
+    # perform n_epochs over the data
+    n_epochs = 4
+    for j in range(n_epochs):
 
         # shuffle frames in the game data
         randomize = np.arange(len(all_rewards))
         np.random.shuffle(randomize)
         all_x_data = all_x_data[randomize]
+        temp_rewards = all_rewards
         all_rewards = all_rewards[randomize]
         all_actions = all_actions[randomize]
 
-        #all_actions_diff = np.array(all_actions, copy=True)
-        #all_actions_diff[all_rewards < 0] = 1 - all_actions[all_rewards < 0]
-        #print(all_x_data.shape, all_rewards.shape, all_actions.shape)
-
         # run the training
-        W1, b1, grads, rwds, new_prob, _, train_loss = sess.run([flappy_graph.W1, flappy_graph.b1, flappy_graph.grads, flappy_graph.rewards, flappy_graph.new_prob, flappy_graph.train_step, flappy_graph.loss], 
+        W1, b1, grads, rwds, _, train_loss = sess.run([flappy_graph.W1, flappy_graph.b1, flappy_graph.grads, flappy_graph.rewards, flappy_graph.train_step, flappy_graph.loss], 
                     feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
@@ -89,13 +89,8 @@ def train_iteration():
                         }
                     )
         
-        # print debugging information
-        #print("W1:", W1)
-        #print("b1", b1)
-        print("grads", grads)
-        print("loss", train_loss, "new_prob and rewards: ", list(zip(new_prob, rwds)))
-        #print("grads", grads)
-        #print(b3)
+        if j == 1: 
+            print(temp_rewards)
         losses.append(train_loss)
     return losses
 
@@ -106,19 +101,25 @@ def get_time():
     return str(datetime.now())
 
 # determine whether to save the model or generate a new one
-
 timestamp = '{0:%Y_%m_%d_%H_%M_%S}'.format(datetime.now())
 
+# make directory for logs
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+log_name = os.path.join(LOG_DIR, 'training_log_{}.txt'.format(timestamp))
+
+# choose whether to save or load a model
 if len(sys.argv) == 1:
     print("Usage: \nGenerate new model: python train_nn.py -n\nLoad existing model: python train_nn.py -l")
     sys.exit(1)
-elif sys.argv[1] == "-l":
+elif sys.argv[1] == "-l" or sys.argv[1] == "--load":
     restore_model()
-    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
+    with open(log_name) as log:
         log.write("[{}] Loading pretrained model...\n".format(get_time()))
-elif sys.argv[1] == "-n":
+elif sys.argv[1] == "-n" or sys.argv[1] == "--new":
     save_model()
-    with open('./log/training_log_{}.txt'.format(timestamp), 'w') as log:
+    with open(log_name) as log:
         log.write("[{}] Generating new model...\n".format(get_time()))
 
 num_iterations = 1
@@ -127,6 +128,6 @@ while True:
     run_agent.run()
     loss = train_iteration()
     save_model()
-    with open('log/training_log_{}.txt'.format(timestamp), 'a') as log:
+    with open(log_name, 'w') as log:
         log.write("[{}] Finished iteration: {}, loss = {}\n".format(get_time(), num_iterations, loss))
     num_iterations += 1

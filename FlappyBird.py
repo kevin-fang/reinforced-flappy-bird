@@ -32,7 +32,7 @@ class FlappyGame:
         self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
 
         # set the gap between the pipes
-        self.gap = 150
+        self.gap = 200
 
         self.wallx = 400
         self.birdY = 350
@@ -126,9 +126,9 @@ class FlappyGame:
         #print(self.wallx)
         #print("bird y: ", self.bird[1])
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
-            return -1
+            return -2
         elif self.wallx <= -25:
-            return 1
+            return 5
         else:
             return .01
 
@@ -193,7 +193,7 @@ class FlappyGame:
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             
-            if SAVING:
+            if SAVING and not self.testing:
                 np.save(screenshot_name, data_arr)
                 #pygame.image.save(self.screen, screenshot_name)
             if (self.game_counter == NUM_GAMES):
@@ -201,7 +201,7 @@ class FlappyGame:
                 return True
             self.reset_game()
         
-        if SAVING and not dead:
+        if SAVING and not dead and not self.testing:
             np.save(screenshot_name, data_arr)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
