@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import cv2
 from config import *
 
 def get_training_data(directory):

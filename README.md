@@ -10,7 +10,7 @@ Some pretrained models exist in `./saved_models`
 
 ### Requirements:
 
-Numpy (`pip install numpy`), PyGame (`pip install pygame`), TensorFlow (`pip install tensorflow-gpu`/`pip install tensorflow`), Python 3.
+Anaconda (https://anaconda.org/anaconda/python), NumPy (`conda install numpy`), PyGame (`pip install pygame`), TensorFlow (`conda install -c conda-forge tensorflow-gpu`/`conda install -c conda-forge tensorflow`), Python 3.
 
 ### Info
 

@@ -4,7 +4,6 @@ import neural_jumper
 from config import *
 from global_vars import *
 import numpy as np
-import cv2
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
