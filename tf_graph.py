@@ -12,17 +12,19 @@ class FlappyGraph:
         self.actions = tf.placeholder(tf.float32, [None], name='actions')
         self.rewards = tf.placeholder(tf.float32, [None], name='rewards')
 
-        self.b1, self.W1, self.b3, self.W3 = b1, W1, b3, W3
 
         # neural network with one hidden layer
         W1 = tf.Variable(-tf.truncated_normal([input_dims, L1], stddev=0.01, dtype=tf.float32))
         b1 = tf.Variable(tf.ones(L1))
         W3 = tf.Variable(tf.truncated_normal([L1, output_dim], stddev=0.01, dtype=tf.float32))
         b3 = tf.Variable(tf.ones(output_dim))
+        
+        self.b1, self.W1, self.b3, self.W3 = b1, W1, b3, W3
 
         y1 = tf.nn.leaky_relu(tf.matmul(self.inputs, W1) + b1, name='fc1')
         
         self.y_logits = tf.matmul(y1, W3) + b3
+        self.sigmoid = tf.sigmoid(self.y_logits)
         
         reshaped_actions = tf.reshape(self.actions, [-1, 1])
         #self.new_prob = ((reshaped_actions - 1) + self.sigmoid) * (2 * reshaped_actions - 1)

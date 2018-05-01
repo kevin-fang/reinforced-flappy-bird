@@ -1,7 +1,6 @@
 import random
 import cv2
 import numpy as np
-from preprocess import *
 from config import *
 import tensorflow as tf
 from tf_graph import FlappyGraph

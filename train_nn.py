@@ -2,7 +2,6 @@ import random, os, numpy as np, tensorflow as tf
 from tf_graph import FlappyGraph
 from config import *
 import sys
-from sklearn import preprocessing
 from datetime import datetime
 
 # add frames since last jump to training data
@@ -115,11 +114,11 @@ if len(sys.argv) == 1:
     sys.exit(1)
 elif sys.argv[1] == "-l" or sys.argv[1] == "--load":
     restore_model()
-    with open(log_name) as log:
+    with open(log_name, 'w') as log:
         log.write("[{}] Loading pretrained model...\n".format(get_time()))
 elif sys.argv[1] == "-n" or sys.argv[1] == "--new":
     save_model()
-    with open(log_name) as log:
+    with open(log_name, 'w') as log:
         log.write("[{}] Generating new model...\n".format(get_time()))
 
 num_iterations = 1
@@ -128,6 +127,6 @@ while True:
     run_agent.run()
     loss = train_iteration()
     save_model()
-    with open(log_name, 'w') as log:
+    with open(log_name, 'a') as log:
         log.write("[{}] Finished iteration: {}, loss = {}\n".format(get_time(), num_iterations, loss))
     num_iterations += 1

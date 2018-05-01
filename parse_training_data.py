@@ -2,8 +2,6 @@ import os
 import numpy as np
 import cv2
 from config import *
-from preprocess import *
-
 
 def get_training_data(directory):
 	# counter for number of saved games

@@ -2,7 +2,6 @@ import pygame, sys, os, random
 from pygame.locals import *  # noqa
 import neural_jumper
 from config import *
-from preprocess import *
 from global_vars import *
 import numpy as np
 import cv2
