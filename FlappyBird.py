@@ -124,11 +124,11 @@ class FlappyGame:
         #print(self.wallx)
         #print("bird y: ", self.bird[1])
         if self.check_collision(temporary_update = True) or not 10 < self.birdY < CANVAS_HEIGHT or self.bird[1] == -1:
-            return -2
+            return DEATH_SCORE
         elif self.wallx <= -25:
-            return 5
+            return PIPE_SCORE
         else:
-            return .01
+            return FRAME_SCORE
 
     def frameUpdate(self, jump):
         self.screen.fill((0, 0, 0))
@@ -156,11 +156,11 @@ class FlappyGame:
         score = self.get_score()
         #if score != 0.01: print(score)
         #print(score)
-        if score == -1:
+        if score == DEATH_SCORE:
             print("finished")
             dead = True
 
-        if not self.testing and score == 1:
+        if not self.testing and score == PIPE_SCORE:
             print('score =1')
             dead = True
 
@@ -194,7 +194,7 @@ class FlappyGame:
             if SAVING and not self.testing:
                 np.save(screenshot_name, data_arr)
                 #pygame.image.save(self.screen, screenshot_name)
-            if (self.game_counter == NUM_GAMES):
+            if (self.game_counter == NUM_GAMES and not self.testing):
                 print("{} games finished. Exiting...".format(NUM_GAMES))
                 return True
             self.reset_game()
@@ -214,9 +214,10 @@ class FlappyGame:
 
         pygame.display.update()
 
-    def run(self, model = False, testing = False):
+    def run(self, model = False):
         # initialize game and game counter font
         clock = pygame.time.Clock()
+        pygame.display.set_caption('Flappy Bird')
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 50)
         self.font = font
@@ -226,7 +227,7 @@ class FlappyGame:
         if over: return
 
         while True:
-            if testing:
+            if self.testing:
                 clock.tick(60)
             else:
                 clock.tick()
