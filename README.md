@@ -8,6 +8,8 @@ Once the model has been trained, it can be tested with `python test_flappy_resul
 
 Some pretrained models exist in `./saved_models`
 
+![Game Screenshot](screenshot.png)
+
 ### Requirements:
 
 Anaconda (https://anaconda.org/anaconda/python), NumPy (`conda install numpy`), PyGame (`pip install pygame`), TensorFlow (`conda install -c conda-forge tensorflow-gpu`/`conda install -c conda-forge tensorflow`), Python 3.
