@@ -12,3 +12,4 @@ screenshots_test/
 .ipynb_checkpoints/
 models_old/
 training_log.txt
+models copy/
