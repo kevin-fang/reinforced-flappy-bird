@@ -4,8 +4,8 @@ import numpy as np
 
 class FlappyGraph:
     def __init__(self, input_dims):
-        L1 = 12
-        L2 = 4
+        L1 = 400
+        L2 = 200
         output_dim = 1
         tf.reset_default_graph()
         self.inputs = tf.placeholder(tf.float32, [None, input_dims], name='inputs')

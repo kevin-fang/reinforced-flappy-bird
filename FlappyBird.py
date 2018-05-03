@@ -4,6 +4,7 @@ import neural_jumper
 from config import *
 from global_vars import *
 import numpy as np
+from preprocess import *
 
 def makeDirIfNotExist(directory):
     if not os.path.exists(directory):
@@ -171,28 +172,28 @@ class FlappyGame:
                                                                 last_jump=self.last_jump_counter, 
                                                                 img_num=self.image_counter))
 
-        #image = pygame.image.tostring(self.screen, "RGB")
-        #image_processed = bw(shrink(decode_image_buffer(image)))
+        image = pygame.image.tostring(self.screen, "RGB")
+        self.image_processed = bw(shrink(decode_image_buffer(image)))
         
         bottom_dist = 360 + self.gap - self.offset
         top_dist = self.gap - self.offset
         # bird Y, dist from pipe, offset, distance from down pipe, distance from up pipe, gravity
-        data_arr = np.array([
-            CANVAS_HEIGHT - self.birdY, 
-            self.wallx - 120, 
-            self.birdY - top_dist,
-            bottom_dist - self.birdY,
-            self.gravity], 
-            dtype=np.float32)
+        #data_arr = np.array([
+        #    CANVAS_HEIGHT - self.birdY, 
+        #    self.wallx - 120, 
+        #    self.birdY - top_dist,
+        #    bottom_dist - self.birdY,
+       #     self.gravity], 
+       #     dtype=np.float32)
         #print("bird y: {}, distance from wall: {}, offset: {}, distance from bottom pipe: {}, distance from top pipe: {}, gravity".format(data_arr[0], data_arr[1], data_arr[2], data_arr[3], data_arr[4], data_arr[5]))
         #print("bird y: {}, bottom: {}, top: {}".format(self.birdY, 360 + self.gap - self.offset, self.gap - self.offset))
-        self.data = data_arr
+        #self.data = data_arr
 
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             
             if SAVING and not self.testing:
-                np.save(screenshot_name, data_arr)
+                np.save(screenshot_name, self.image_processed)
                 #pygame.image.save(self.screen, screenshot_name)
             if (self.game_counter == NUM_GAMES and not self.testing):
                 print("{} games finished. Exiting...".format(NUM_GAMES))
@@ -200,9 +201,7 @@ class FlappyGame:
             self.reset_game()
         
         if SAVING and not dead and not self.testing:
-            np.save(screenshot_name, data_arr)
-            #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
-            #pygame.image.save(self.screen, screenshot_name)
+            np.save(screenshot_name, self.image_processed)
             
         if dead:
             # reset the image counter and increment the game counter
@@ -233,7 +232,7 @@ class FlappyGame:
                 clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            result = neural_jumper.get_jump(self.data, self.last_jump_counter)[0]
+            result = neural_jumper.get_jump(self.image_processed, self.last_jump_counter)[0]
             # flip a biased coin
             #print("result: {}".format(result))
             # send events to jump or stay
