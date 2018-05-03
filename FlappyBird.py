@@ -40,7 +40,7 @@ class FlappyGame:
         self.dead = False
         self.sprite = 0
 
-        self.offset = random.randint(-150, 350)
+        self.offset = random.randint(-120, 330)
 
         # point counter
         self.counter = 0
@@ -66,7 +66,7 @@ class FlappyGame:
         if self.wallx < -27:
             self.wallx = 400
             self.counter += 1
-            self.offset = random.randint(-150, 350)
+            self.offset = random.randint(-120, 350)
 
     def check_collision(self, temporary_update = False):
         # up and down pipes
