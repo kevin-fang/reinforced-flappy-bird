@@ -84,7 +84,7 @@ def train_iteration():
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-3
+                        flappy_graph.lr: 1e-2
                         }
                     )
         

@@ -40,7 +40,7 @@ class FlappyGame:
         self.dead = False
         self.sprite = 0
 
-        self.offset = random.randint(-150, 150)
+        self.offset = random.randint(-150, 400)
 
         # point counter
         self.counter = 0
@@ -63,7 +63,7 @@ class FlappyGame:
     # move the walls to the left or teleport them to the end
     def updateWalls(self):
         self.wallx -= 2
-        if self.wallx < -30:
+        if self.wallx < -27:
             self.wallx = 400
             self.counter += 1
             self.offset = random.randint(-110, 110)
@@ -162,7 +162,7 @@ class FlappyGame:
 
         if not self.testing and score == PIPE_SCORE:
             print('score =1')
-            dead = True
+           # dead = True
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
                                                     "{img_num}_{y}_{r}_{last_jump}_capture.npy"
