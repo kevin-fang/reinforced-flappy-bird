@@ -15,9 +15,9 @@ class FlappyGraph:
 
 
         # neural network with one hidden layer
-        W1 = tf.Variable(-tf.truncated_normal([input_dims, L1], stddev=0.1, dtype=tf.float32))
+        W1 = tf.Variable(tf.truncated_normal([input_dims, L1], stddev=0.1, dtype=tf.float32))
         b1 = tf.Variable(tf.ones(L1))
-        W2 = tf.Variable(-tf.truncated_normal([L1, L2], stddev=0.01, dtype=tf.float32))
+        W2 = tf.Variable(tf.truncated_normal([L1, L2], stddev=0.01, dtype=tf.float32))
         b2 = tf.Variable(tf.ones(L2))
         W3 = tf.Variable(tf.truncated_normal([L2, output_dim], stddev=0.01, dtype=tf.float32))
         b3 = tf.Variable(tf.ones(output_dim))
