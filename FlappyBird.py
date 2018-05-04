@@ -30,7 +30,7 @@ class FlappyGame:
         self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
 
         # set the gap between the pipes
-        self.gap = 170
+        self.gap = 180
 
         self.wallx = 400
         self.birdY = 350
@@ -66,7 +66,7 @@ class FlappyGame:
         if self.wallx < -27:
             self.wallx = 400
             self.counter += 1
-            self.offset = random.randint(-120, 350)
+            self.offset = random.randint(-120, 330)
 
     def check_collision(self, temporary_update = False):
         # up and down pipes
