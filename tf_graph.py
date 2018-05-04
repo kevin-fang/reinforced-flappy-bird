@@ -13,7 +13,6 @@ class FlappyGraph:
         self.actions = tf.placeholder(tf.float32, [None], name='actions')
         self.rewards = tf.placeholder(tf.float32, [None], name='rewards')
 
-
         # neural network with one hidden layer
         W1 = tf.Variable(tf.truncated_normal([input_dims, L1], stddev=0.1, dtype=tf.float32))
         b1 = tf.Variable(tf.ones(L1))

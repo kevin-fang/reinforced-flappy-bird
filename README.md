@@ -8,7 +8,7 @@ Once the model has been trained, it can be tested with `python test_flappy_resul
 
 Some pretrained models exist in `./saved_models`
 
-![Game Screenshot](screenshot.png)
+![Game Animation](animation.gif)
 
 ### Requirements:
 
