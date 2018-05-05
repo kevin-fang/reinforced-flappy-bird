@@ -20,7 +20,7 @@ def initialize_network(model = False):
 		initialized = True
 	elif model:
 		saver = tf.train.Saver()
-		saver.restore(sess, tf.train.latest_checkpoint(MODEL_DIR))
+		saver.restore(sess, model)
 		initialized = True
 	else:
 		initialized = False
