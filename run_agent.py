@@ -1,6 +1,9 @@
 import test_flappy_results
 import parse_training_data
 from shutil import rmtree
+
+import sys
+sys.path.append('./FlappyBird')
 from config import *
 import os
 

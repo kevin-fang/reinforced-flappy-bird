@@ -1,4 +1,6 @@
 import random
+import sys
+sys.path.append('./FlappyBird')
 import numpy as np
 from config import *
 import tensorflow as tf

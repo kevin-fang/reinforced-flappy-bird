@@ -22,12 +22,12 @@ class FlappyGame:
             self.screen = pygame.display.set_mode((CANVAS_WIDTH, CANVAS_HEIGHT))
 
         self.bird = pygame.Rect(65, 50, 50, 50)
-        self.background = pygame.image.load("assets/background.png").convert()
-        self.birdSprites = [pygame.image.load("assets/1.png").convert_alpha(),
-                            pygame.image.load("assets/2.png").convert_alpha()]
+        self.background = pygame.image.load("./FlappyBird/assets/background.png").convert()
+        self.birdSprites = [pygame.image.load("./FlappyBird/assets/1.png").convert_alpha(),
+                            pygame.image.load("./FlappyBird/assets/2.png").convert_alpha()]
         # create pipes
-        self.wallUp = pygame.image.load("assets/bottom.png").convert_alpha()
-        self.wallDown = pygame.image.load("assets/top.png").convert_alpha()
+        self.wallUp = pygame.image.load("./FlappyBird/assets/bottom.png").convert_alpha()
+        self.wallDown = pygame.image.load("./FlappyBird/assets/top.png").convert_alpha()
 
         # set the gap between the pipes
         self.gap = 180

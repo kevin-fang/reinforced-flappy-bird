@@ -1,7 +1,8 @@
 import random, os, numpy as np, tensorflow as tf
+import sys
+sys.path.append('./FlappyBird')
 from tf_graph import FlappyGraph
 from config import *
-import sys
 from datetime import datetime
 
 # add frames since last jump to training data
