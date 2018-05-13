@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+sys.path.append('./FlappyBird')
 import pygame, sys, os, random
 from config import *
 from FlappyBird import FlappyGame

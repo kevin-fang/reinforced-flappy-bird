@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append('./FlappyBird')
 import numpy as np
 from config import *
 

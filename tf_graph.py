@@ -1,4 +1,6 @@
 import tensorflow as tf
+import sys
+sys.path.append('./FlappyBird')
 from config import *
 import numpy as np
 
