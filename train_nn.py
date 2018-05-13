@@ -5,21 +5,6 @@ from tf_graph import FlappyGraph
 from config import *
 from datetime import datetime
 
-# add frames since last jump to training data
-def add_jumps_to_training(training_images, last_jumps):
-    print("Appending jumps to training data...")
-    iter_counter = 0
-    X_data = []
-    # (game frames, height, width)
-    for i, game in enumerate(training_images):
-        X_data.append([])
-        for j, image in enumerate(game):
-            X_data[iter_counter].append(np.append(image.ravel(), last_jumps[i][j]))
-        X_data[iter_counter] = np.array(X_data[iter_counter], dtype=np.float32)
-        iter_counter += 1
-
-    return np.array(X_data)
-
 # initialize the neural network
 flappy_graph = FlappyGraph(NUM_NEURAL_DIMS)
 init = tf.global_variables_initializer()
@@ -44,13 +29,11 @@ def train_iteration():
     training_images = np.load(os.path.join(DATA_DIR, "images.npy"))
     actions = np.load(os.path.join(DATA_DIR, "actions.npy"))
     rewards = np.load(os.path.join(DATA_DIR, "adjusted_rewards.npy"))
-    last_jumps = np.load(os.path.join(DATA_DIR, "last_jumps.npy"))
-    X_data = add_jumps_to_training(training_images = training_images, last_jumps = last_jumps)
 
     # combine all games into one array for training
     all_x_data = np.array([])
-    for i, _ in enumerate(X_data):
-        game = X_data[i].ravel().reshape(-1, X_data[i].shape[0])
+    for i, _ in enumerate(training_images):
+        game = training_images[i][0].ravel().reshape(-1, training_images[i].shape[0])
         all_x_data = np.append(all_x_data, game)
     all_x_data = all_x_data.reshape([-1, NUM_NEURAL_DIMS])
 
@@ -85,13 +68,15 @@ def train_iteration():
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
                         flappy_graph.rewards: all_rewards, 
-                        flappy_graph.lr: 1e-2
+                        flappy_graph.lr: 1e-3
                         }
                     )
         
         if j == 1: 
             print(temp_rewards)
         losses.append(train_loss)
+        if train_loss == 0:
+            print("Loss = 0. Exiting...")
     return losses
 
 import run_agent

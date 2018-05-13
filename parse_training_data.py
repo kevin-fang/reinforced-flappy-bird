@@ -10,44 +10,31 @@ def get_training_data(directory):
 
 	actions = []
 	last_jumps = []
-	images = []
 	rewards = []
 	iter_counter = 0
-	# iterate through the training image directory
-	for root, dirs, files in os.walk(directory):
-		path = root.split(os.sep)
+	images = []
 
-		# format of file name "{img_num}_{jumped}_{reward}_{last_jump}_capture.jpg"
+	for game_num in range(1, NUM_GAMES + 1):
+		actions.append([])
+		rewards.append([])
+		last_jumps.append([])
+		images.append([])
 
-		# save all the game data, sort by frame number
-		files = list(filter((lambda filename: True if "capture" in filename else False), files))
-		files = sorted(files, key=lambda name: int(name.split("_")[0]))
+		game_action = np.load(os.path.join(TRAIN_SCREEN_DIR, "game{}_action.npy".format(game_num)))
+		game_data = np.load(os.path.join(TRAIN_SCREEN_DIR, "game{}_data.npy".format(game_num)))
+		images[iter_counter].append(game_data)
 
-		if len(files) > 0:
-			# append an empty array to all the information arrays
-			actions.append([])
-			rewards.append([])
-			images.append([])
-			last_jumps.append([])
+		for i, action in enumerate(game_action):
+			#print(action)
+			actions[iter_counter].append(action[1])
+			rewards[iter_counter].append(action[2])
+			num_saved += 1
 
-			for file in files:
-				# load image from file
-				image = np.load(os.path.join(*path, file))
-				_, jumped, reward, frames_since_jump, _ = file.split("_")
-				# append the information to the different arrays
-				actions[iter_counter].append(1 if int(jumped) == 1 else 0)
-				rewards[iter_counter].append(float(reward))
-				images[iter_counter].append(image)
-				last_jumps[iter_counter].append(frames_since_jump)
-				num_saved += 1
-				#print("Parsed file: {}".format(file))
-			# lambda function to convert to float array
+		convert = lambda arr: np.array(arr[iter_counter], np.float32)
+		rewards[iter_counter], actions[iter_counter] = map(convert, 
+			[rewards, actions])
 
-			# converts these 2d arrays into numpy arrays - one row for each game. Stored as object though, as array is not rectangular
-			convert = lambda arr: np.array(arr[iter_counter], np.float32)
-			rewards[iter_counter], actions[iter_counter], last_jumps[iter_counter], images[iter_counter] = map(convert, 
-				[rewards, actions, last_jumps, images])
-			iter_counter += 1
+		iter_counter += 1
 
 	print("{} frames saved.".format(num_saved))
 	return actions, last_jumps, images, rewards
@@ -55,7 +42,7 @@ def get_training_data(directory):
 # calculate adjusted rewards to account for future rewards
 def calculate_adjusted_rewards(actions, rewards):
 	adjusted_rewards = []
-	gamma = 0.95
+	discount = 0.99
 	iter_counter = 0
 	# loop through each game
 	for i, game in enumerate(rewards):
@@ -68,7 +55,7 @@ def calculate_adjusted_rewards(actions, rewards):
 			# calculate the adjusted reward, accounting for future frames.
 			for k, future_reward in enumerate(rewards[i][j:]):
 				#print("gamma ** j: {}, future reward: {}".format(gamma ** j, future_reward))
-				adj_reward += (gamma ** k) * future_reward
+				adj_reward += (discount ** k) * future_reward
 
 			adjusted_rewards[iter_counter].append(adj_reward)
 		adjusted_rewards[iter_counter] = np.array(adjusted_rewards[iter_counter], dtype=np.float32)

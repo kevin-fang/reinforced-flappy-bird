@@ -10,6 +10,7 @@ import os
 def run():
 	if os.path.exists(TRAIN_SCREEN_DIR):
 		rmtree(TRAIN_SCREEN_DIR)
+	os.makedirs(TRAIN_SCREEN_DIR)
 	test_flappy_results.start(MODEL_PATH)
 	parse_training_data.parse_data()
 

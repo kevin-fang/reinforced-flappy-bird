@@ -4,10 +4,10 @@ import sys
 sys.path.append('./FlappyBird')
 import pygame, sys, os, random
 from config import *
-from FlappyBird import FlappyGame
+import flappy
 
 def start(model, testing = False):
-	FlappyGame(testing).run(model = model)
+	flappy.main(model = model)
 
 # just play flappy bird with a pretrained model
 if __name__ == "__main__":

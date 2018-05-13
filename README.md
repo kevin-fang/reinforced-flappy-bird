@@ -16,7 +16,7 @@ Anaconda (https://anaconda.org/anaconda/python), NumPy (`conda install numpy`), 
 
 ### Info
 
-Flappy bird implementation written in Python with PyGame from https://github.com/Max00355/FlappyBird, significantly modified to work with machine learning code.
+Flappy bird implementation written in Python with PyGame from https://github.com/sourabhv/FlapPyBird, significantly modified to work with machine learning code.
 
 `python train_nn.py -n` will generate a new model with random initial weights and keep training in iterations of 20 games. It will save a model in a new folder `models/`.
 
