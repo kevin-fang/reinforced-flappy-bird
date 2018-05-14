@@ -63,7 +63,7 @@ def train_iteration():
         all_actions = all_actions[randomize]
 
         # run the training
-        W1, b1, grads, rwds, _, train_loss = sess.run([flappy_graph.W1, flappy_graph.b1, flappy_graph.grads, flappy_graph.rewards, flappy_graph.train_step, flappy_graph.loss], 
+        rwds, _, train_loss = sess.run([flappy_graph.rewards, flappy_graph.train_step, flappy_graph.loss], 
                     feed_dict = {
                         flappy_graph.inputs: all_x_data, 
                         flappy_graph.actions: all_actions, 
@@ -77,6 +77,7 @@ def train_iteration():
         losses.append(train_loss)
         if train_loss == 0:
             print("Loss = 0. Exiting...")
+            sys.exit(0)
     return losses
 
 import run_agent
