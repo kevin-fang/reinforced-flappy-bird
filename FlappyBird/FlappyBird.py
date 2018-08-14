@@ -110,7 +110,7 @@ class FlappyGame:
         return False
 
     def reset_game(self):
-        print('resetting')
+        #print('resetting')
         self.alive_frames = 0
         self.bird[1] = 350
         self.birdY = 350
@@ -157,11 +157,11 @@ class FlappyGame:
         #if score != 0.01: print(score)
         #print(score)
         if score == DEATH_SCORE:
-            print("finished")
+            #print("finished")
             dead = True
 
         if not self.testing and score == PIPE_SCORE:
-            print('score =1')
+            print('Score + 1')
            # dead = True
 
         screenshot_name = os.path.join(TRAIN_SCREEN_DIR, "game{}".format(self.game_counter), 
@@ -191,7 +191,7 @@ class FlappyGame:
         if dead:
             print("Game {} over; alive frames: {}".format(self.game_counter, self.alive_frames))
             
-            if SAVING and not self.testing:
+            if SAVING and not self.testing and self.get_score() < 10:
                 np.save(screenshot_name, data_arr)
                 #pygame.image.save(self.screen, screenshot_name)
             if (self.game_counter == NUM_GAMES and not self.testing):
@@ -199,7 +199,7 @@ class FlappyGame:
                 return True
             self.reset_game()
         
-        if SAVING and not dead and not self.testing:
+        if SAVING and not dead and not self.testing and self.get_score() < 10:
             np.save(screenshot_name, data_arr)
             #cv2.imwrite(screenshot_name, bw(shrink(decode_image_buffer(image))))
             #pygame.image.save(self.screen, screenshot_name)
@@ -233,7 +233,7 @@ class FlappyGame:
                 clock.tick()
             # get a jump from the neural network
             image = pygame.image.tostring(self.screen, "RGB")
-            result = neural_jumper.get_jump(self.data, self.last_jump_counter)[0]
+            result = neural_jumper.get_jump(self.data, self.last_jump_counter, self.testing)[0]
             # flip a biased coin
             #print("result: {}".format(result))
             # send events to jump or stay

@@ -4,12 +4,14 @@ sys.path.append('./FlappyBird')
 from config import *
 import numpy as np
 
+
 class FlappyGraph:
     def __init__(self, input_dims):
         L1 = 12
         L2 = 4
         output_dim = 1
         tf.reset_default_graph()
+        tf.set_random_seed(88)
         self.inputs = tf.placeholder(tf.float32, [None, input_dims], name='inputs')
 
         self.actions = tf.placeholder(tf.float32, [None], name='actions')

@@ -33,7 +33,7 @@ def initialize_network(model = False):
 '''
 
 # image takes input of the screenshot, last_jump is the number of frames since the last jump
-def get_jump(data_arr, last_jump):
+def get_jump(data_arr, last_jump, testing = False):
 	if not initialized:
 		print("Neural network not initialized. Please run initialize_session() to create a new model.")
 		import sys
@@ -45,6 +45,8 @@ def get_jump(data_arr, last_jump):
 	logits, prob = sess.run([graph.y_logits, graph.sigmoid], feed_dict={graph.inputs: np.array([X_data])})
 	#print(logits, prob)
 	result = np.random.choice(2, 1, p=[1-prob[0][0], prob[0][0]])
+	if prob[0][0] < .7 and testing:
+		result = [0]
 	if result == 1:
 		print(logits, prob)
 	return result
