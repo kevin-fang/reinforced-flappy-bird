@@ -1,5 +1,7 @@
 # Playing Flappy Bird with Reinforcement Learning
 
+Demo video available at https://www.youtube.com/watch?v=PNE6KFNn1yY
+
 ## Running
 
 After installing the requirements (NumPy, PyGame, and TensorFlow), run `python train_nn.py -n` to generate a new model. It will play 20 games of Flappy Bird, train, and do that again, retraining each round. If you have a saved model, run `python train_nn.py -l` and it will retrain on the model already available in the folder `./models`. 
